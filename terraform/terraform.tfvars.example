@@ -1,0 +1,19 @@
+# CloudShield AWS Deployment Configuration Example
+# Copy this file to terraform.tfvars and customize for your AWS environment.
+
+aws_region           = "us-east-1"
+environment          = "production"
+vpc_cidr             = "10.0.0.0/16"
+public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
+private_subnet_cidrs = ["10.0.11.0/24", "10.0.12.0/24"]
+
+domain_name          = "cloudshield.example.com"
+instance_type_nginx  = "t3.small"
+instance_type_backend= "t3.medium"
+
+asg_min_size         = 2
+asg_max_size         = 8
+asg_desired_capacity = 2
+
+# Limit SSH access to your administration IP or VPN CIDR
+admin_cidr           = "203.0.113.50/32"

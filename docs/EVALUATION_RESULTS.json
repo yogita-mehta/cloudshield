@@ -1,0 +1,67 @@
+[
+  {
+    "scenario_name": "Scenario A: No Protection Baseline",
+    "mitigation_mode": "NO_PROTECTION",
+    "attack_type": "HTTP_FLOOD",
+    "time_to_detect_sec": 999.0,
+    "time_to_mitigate_sec": 999.0,
+    "client_availability_pct": 24.5,
+    "error_rate_5xx_pct": 75.5,
+    "avg_latency_ms": 50.5,
+    "p95_latency_ms": 91.0,
+    "false_positive_rate_pct": 0.0,
+    "classification_accuracy_pct": 0.0
+  },
+  {
+    "scenario_name": "Scenario B: Usman-Hamza et al. (CPU + DNS)",
+    "mitigation_mode": "USMAN_HAMZA_BASELINE",
+    "attack_type": "FLASH_CROWD",
+    "time_to_detect_sec": 12.4,
+    "time_to_mitigate_sec": 38.6,
+    "client_availability_pct": 68.2,
+    "error_rate_5xx_pct": 31.8,
+    "avg_latency_ms": 24.8,
+    "p95_latency_ms": 54.6,
+    "false_positive_rate_pct": 74.0,
+    "classification_accuracy_pct": 55.0
+  },
+  {
+    "scenario_name": "Scenario C: CloudShield Multi-Signal",
+    "mitigation_mode": "CLOUDSHIELD_FULL",
+    "attack_type": "FLASH_CROWD",
+    "time_to_detect_sec": 2.8,
+    "time_to_mitigate_sec": 3.6,
+    "client_availability_pct": 96.8,
+    "error_rate_5xx_pct": 3.2,
+    "avg_latency_ms": 5.6,
+    "p95_latency_ms": 8.5,
+    "false_positive_rate_pct": 1.2,
+    "classification_accuracy_pct": 98.4
+  },
+  {
+    "scenario_name": "Ablation 1: Without Shannon Entropy",
+    "mitigation_mode": "ABLATION_NO_ENTROPY",
+    "attack_type": "FLASH_CROWD",
+    "time_to_detect_sec": 4.2,
+    "time_to_mitigate_sec": 5.1,
+    "client_availability_pct": 79.5,
+    "error_rate_5xx_pct": 20.5,
+    "avg_latency_ms": 6.4,
+    "p95_latency_ms": 12.7,
+    "false_positive_rate_pct": 68.5,
+    "classification_accuracy_pct": 71.0
+  },
+  {
+    "scenario_name": "Ablation 2: Without Honeypot Decoys",
+    "mitigation_mode": "ABLATION_NO_HONEYPOT",
+    "attack_type": "HTTP_FLOOD",
+    "time_to_detect_sec": 7.5,
+    "time_to_mitigate_sec": 8.9,
+    "client_availability_pct": 92.4,
+    "error_rate_5xx_pct": 7.6,
+    "avg_latency_ms": 6.0,
+    "p95_latency_ms": 9.6,
+    "false_positive_rate_pct": 2.0,
+    "classification_accuracy_pct": 91.5
+  }
+]
