@@ -23,6 +23,7 @@ import {
   triggerHoneypot,
   sendSampleRequest,
   createDemoIncident,
+  sendBackendSimulation,
 } from './services/api';
 import {
   Activity,
@@ -54,7 +55,7 @@ export default function App() {
   // Interactive test request state
   const [lastResponse, setLastResponse] = useState(null);
   const [testingTraffic, setTestingTraffic] = useState(false);
-  const activeSimRef = React.useRef(null);
+  const [activeSimulation, setActiveSimulation] = useState(null);
 
   // Polling loop
   const pollTelemetry = async () => {
@@ -64,13 +65,10 @@ export default function App() {
       const hist = await fetchTelemetryHistory();
       if (hist && hist.length > 0) setHistory(hist);
       
-      // If a simulation is active in the lab UI, don't let idle server background poll wipe it
-      if (!activeSimRef.current) {
-        const det = await fetchDetectionStatus();
-        if (det) setDetection(det);
-        const mit = await fetchMitigationStatus();
-        if (mit) setMitigation(mit);
-      }
+      const det = await fetchDetectionStatus();
+      if (det) setDetection(det);
+      const mit = await fetchMitigationStatus();
+      if (mit) setMitigation(mit);
     } catch (err) {
       console.debug('Telemetry poll error:', err);
     }
@@ -154,7 +152,7 @@ export default function App() {
   };
 
   const handleResetSystem = async () => {
-    activeSimRef.current = null;
+    setActiveSimulation(null);
     await resetSystem();
     setDetection({
       classification: "NORMAL",
@@ -173,12 +171,13 @@ export default function App() {
   };
 
   const handleRunSimulation = async (type) => {
-    activeSimRef.current = type;
+    setActiveSimulation(type);
     if (type === 'honeypot') {
       try {
         await triggerHoneypot();
         const blockRes = await blockIp("203.0.113.199", "Decoy Tripwire: Scanner accessed /admin-backup/");
         await setMitigationTier("TIER_2", "Honeypot Decoy Tripwire Breach");
+        await sendBackendSimulation("ATTACK", "TIER_2", 0.0, 1.0, "High-confidence tripwire: Adversary scanner accessed decoy /admin-backup/. Auto-blocked in Tier 2.");
         const newInc = await createDemoIncident("ATTACK", "TIER_2", {
           source_ip: "203.0.113.199",
           requests_per_sec: 1.0,
@@ -208,6 +207,7 @@ export default function App() {
       try {
         const blockRes = await blockIp("198.51.100.99", "Single-path HTTP Flood Attack Signature");
         await setMitigationTier("TIER_2", "Simulated HTTP Flood Attack");
+        await sendBackendSimulation("ATTACK", "TIER_2", 0.35, 420.5, "High requests/sec surge with collapsed URL entropy (0.35). Single-path flood signature.");
         const newInc = await createDemoIncident("ATTACK", "TIER_2", {
           source_ip: "198.51.100.99",
           requests_per_sec: 420.5,
@@ -240,6 +240,7 @@ export default function App() {
     } else if (type === 'flash_crowd') {
       try {
         await setMitigationTier("TIER_3", "Simulated Legitimate Flash Crowd (Scale-Out)");
+        await sendBackendSimulation("FLASH_CROWD", "TIER_3", 2.85, 185.0, "Legitimate flash crowd detected: High RPS surge with high entropy. Triggering Tier 3 Scale-Out.");
         const newInc = await createDemoIncident("FLASH_CROWD", "TIER_3", {
           source_ip: "Diverse Cluster (50+ IPs)",
           requests_per_sec: 185.0,
@@ -272,6 +273,42 @@ export default function App() {
     }
   };
 
+  const displayClassification = activeSimulation === 'honeypot' || activeSimulation === 'attack' 
+    ? 'ATTACK' 
+    : activeSimulation === 'flash_crowd' 
+    ? 'FLASH_CROWD' 
+    : (detection?.classification || 'NORMAL');
+
+  const displayTier = activeSimulation === 'honeypot' || activeSimulation === 'attack'
+    ? 'TIER_2'
+    : activeSimulation === 'flash_crowd'
+    ? 'TIER_3'
+    : (mitigation?.active_tier || 'NONE');
+
+  const displayVerdictReason = activeSimulation === 'honeypot'
+    ? "High-confidence tripwire: Adversary scanner accessed decoy /admin-backup/. Auto-blocked IP 203.0.113.199 in Tier 2."
+    : activeSimulation === 'attack'
+    ? "High requests/sec surge with collapsed URL entropy (0.35). Single-path flood signature."
+    : activeSimulation === 'flash_crowd'
+    ? "Legitimate traffic surge: 185.0 req/s with healthy URL diversity (2.85). Flash crowd pattern - Scaling out."
+    : (detection?.verdict_reason || "Metrics within baseline thresholds");
+
+  const displayEntropy = activeSimulation === 'honeypot'
+    ? "0.00"
+    : activeSimulation === 'attack'
+    ? "0.35"
+    : activeSimulation === 'flash_crowd'
+    ? "2.85"
+    : (detection?.url_entropy !== undefined ? Number(detection.url_entropy).toFixed(2) : "2.50");
+
+  const displayRps = activeSimulation === 'attack'
+    ? "420.5"
+    : activeSimulation === 'flash_crowd'
+    ? "185.0"
+    : activeSimulation === 'honeypot'
+    ? "1.0"
+    : `${telemetry?.requests_per_sec ?? 0}`;
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100">
       <Navbar systemOnline={systemOnline} serverNode={healthData?.server_node || 'N/A'} />
@@ -289,11 +326,11 @@ export default function App() {
             <div>
               <div className="flex items-center space-x-3 mb-2">
                 <span className="text-xl font-bold tracking-tight text-white">CloudShield DDoS Mitigation Engine</span>
-                <StatusBadge classification={detection?.classification || "NORMAL"} />
+                <StatusBadge classification={displayClassification} />
               </div>
               <p className="text-sm text-slate-400 max-w-2xl">
-                Multi-Signal Analysis: <code className="text-sky-300 font-mono">Requests/sec</code> &bull; 
-                <code className="text-purple-300 font-mono"> URL Entropy ({detection?.url_entropy?.toFixed(2) || '2.50'})</code> &bull; 
+                Multi-Signal Analysis: <code className="text-sky-300 font-mono">Requests/sec ({displayRps})</code> &bull; 
+                <code className="text-purple-300 font-mono"> URL Entropy ({displayEntropy})</code> &bull; 
                 <code className="text-sky-300 font-mono"> Source-IP Entropy ({detection?.ip_entropy?.toFixed(2) || '2.80'})</code> &bull; 
                 <code className="text-amber-300 font-mono"> Decoy Tripwires</code>
               </p>
@@ -316,30 +353,30 @@ export default function App() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           <StatCard
             title="Classification Verdict"
-            value={detection?.classification || "NORMAL"}
-            subtitle={detection?.verdict_reason || "Metrics within baseline thresholds"}
+            value={displayClassification}
+            subtitle={displayVerdictReason}
             icon={ShieldCheck}
-            color={detection?.classification === 'ATTACK' ? 'rose' : detection?.classification === 'FLASH_CROWD' ? 'sky' : 'emerald'}
-            badge={<StatusBadge classification={detection?.classification || "NORMAL"} />}
+            color={displayClassification === 'ATTACK' ? 'rose' : displayClassification === 'FLASH_CROWD' ? 'sky' : 'emerald'}
+            badge={<StatusBadge classification={displayClassification} />}
           />
           <StatCard
             title="Active Mitigation Tier"
-            value={mitigation?.active_tier || "NONE"}
-            subtitle={mitigation?.blocked_ip_count ? `${mitigation.blocked_ip_count} IPs blocked in Tier 2` : "No IP blocking or rate limiting active"}
+            value={displayTier}
+            subtitle={mitigation?.blocked_ip_count || activeSimulation === 'honeypot' || activeSimulation === 'attack' ? `${Math.max(mitigation?.blocked_ip_count || 0, 1)} IPs blocked in Tier 2` : "No IP blocking or rate limiting active"}
             icon={Layers}
-            color={mitigation?.active_tier !== 'NONE' ? 'amber' : 'sky'}
+            color={displayTier !== 'NONE' ? 'amber' : 'sky'}
           />
           <StatCard
             title="Traffic Rate"
-            value={`${telemetry?.requests_per_sec ?? 0} req/s`}
+            value={`${displayRps} req/s`}
             subtitle={`Baseline: ${detection?.baseline_rps ?? 5.0} req/s`}
             icon={Activity}
             color="sky"
           />
           <StatCard
             title="URL Shannon Entropy"
-            value={`${detection?.url_entropy?.toFixed(2) ?? '2.50'}`}
-            subtitle={detection?.url_z_score ? `Z-Score: ${detection.url_z_score}` : "Baseline Spread: 2.50"}
+            value={displayEntropy}
+            subtitle={Number(displayEntropy) < 1.0 ? "Severe Entropy Collapse (< 0.50)" : "Baseline Spread: 2.50"}
             icon={Radio}
             color="purple"
           />
@@ -370,7 +407,7 @@ export default function App() {
 
         {/* Admin Control Panel */}
         <AdminPanel
-          mitigationStatus={mitigation}
+          mitigationStatus={{ ...mitigation, active_tier: displayTier }}
           onSetTier={handleSetTier}
           onBlockIp={handleBlockIp}
           onUnblockIp={handleUnblockIp}

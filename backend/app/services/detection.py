@@ -21,12 +21,44 @@ class DetectionEngine:
         self.incident_cooldown_seconds: int = 15  # Cooldown between recording duplicate incidents
         self.current_state: str = "NORMAL"        # NORMAL, SUSPICIOUS, ATTACK, FLASH_CROWD
         self.current_verdict: Dict[str, Any] = {}
+        self.simulation_verdict: Optional[Dict[str, Any]] = None
+
+    def set_simulation(self, classification: str, tier: str, url_entropy: float = 0.0, rps: float = 1.0, verdict_reason: str = "Simulation"):
+        self.current_state = classification
+        self.simulation_verdict = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "classification": classification,
+            "mitigation_tier": tier,
+            "requests_per_sec": rps,
+            "baseline_rps": round(entropy_engine.ewma_rps, 1),
+            "cpu_utilization": 2.5,
+            "error_rate_5xx": 0.0,
+            "latency_ms": 25.0,
+            "url_entropy": url_entropy,
+            "url_entropy_baseline": 2.5,
+            "url_z_score": 5.0 if url_entropy < 1.0 else 0.5,
+            "ip_entropy": 0.0 if classification == "ATTACK" else 2.8,
+            "ip_entropy_baseline": 2.8,
+            "top_ip": "203.0.113.199" if classification == "ATTACK" else "Diverse Cluster (50+ IPs)",
+            "top_ip_concentration_pct": 100.0 if classification == "ATTACK" else 15.0,
+            "honeypot_hit_count": 1 if "honeypot" in verdict_reason.lower() else 0,
+            "verdict_reason": verdict_reason
+        }
+        self.current_verdict = self.simulation_verdict
+        mitigation_engine.active_tier = tier
+
+    def clear_simulation(self):
+        self.simulation_verdict = None
+        self.current_verdict = {}
+        self.current_state = "NORMAL"
 
     async def evaluate_traffic(self, db: Optional[Session] = None) -> Dict[str, Any]:
         """
         Executes a single multi-signal detection cycle.
         Returns the evaluation report.
         """
+        if self.simulation_verdict is not None:
+            return self.simulation_verdict
         # 1. Gather Telemetry
         metrics = await get_current_metrics()
         recent_logs = read_recent_access_logs(seconds_window=10)

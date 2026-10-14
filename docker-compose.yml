@@ -95,6 +95,8 @@ services:
     container_name: cloudshield-frontend
     ports:
       - "3000:80"
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro
     depends_on:
       - nginx
     networks:

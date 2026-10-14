@@ -168,3 +168,23 @@ export async function createDemoIncident(classification = "SUSPICIOUS", tier = "
   });
   return await res.json();
 }
+
+export async function sendBackendSimulation(classification, tier, url_entropy = 0.0, rps = 1.0, reason = "") {
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/detection/simulate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        classification,
+        mitigation_tier: tier,
+        url_entropy,
+        requests_per_sec: rps,
+        verdict_reason: reason
+      })
+    });
+    return await res.json();
+  } catch (err) {
+    console.error("sendBackendSimulation error:", err);
+    return null;
+  }
+}

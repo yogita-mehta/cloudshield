@@ -49,6 +49,7 @@ def reset_system():
     
     detection_engine.current_state = "NORMAL"
     detection_engine.current_verdict = {}
+    detection_engine.clear_simulation()
     
     entropy_engine.ewma_rps = 5.0
     entropy_engine.ewma_ip_entropy = 2.8

@@ -30,3 +30,25 @@ def get_entropy_details():
         "ewma_rps": entropy_engine.ewma_rps,
         "alpha": entropy_engine.alpha
     }
+
+from pydantic import BaseModel
+
+class SimulationRequest(BaseModel):
+    classification: str = "ATTACK"
+    mitigation_tier: str = "TIER_2"
+    url_entropy: float = 0.0
+    requests_per_sec: float = 1.0
+    verdict_reason: str = "Simulation triggered from control panel"
+
+@router.post("/simulate", response_model=Dict[str, Any])
+def trigger_simulation(req: SimulationRequest):
+    """Sets a simulated detection verdict in the detection engine."""
+    detection_engine.set_simulation(
+        classification=req.classification,
+        tier=req.mitigation_tier,
+        url_entropy=req.url_entropy,
+        rps=req.requests_per_sec,
+        verdict_reason=req.verdict_reason
+    )
+    return detection_engine.current_verdict
+
