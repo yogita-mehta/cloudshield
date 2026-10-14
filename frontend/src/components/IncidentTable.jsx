@@ -13,7 +13,10 @@ export default function IncidentTable({ incidents, onSelectIncident }) {
     try {
       const raw = typeof ts === 'string' && !ts.endsWith('Z') ? ts + 'Z' : ts;
       const d = new Date(raw);
-      return isNaN(d.getTime()) ? new Date(ts).toLocaleTimeString() : d.toLocaleTimeString();
+      if (isNaN(d.getTime())) return String(ts);
+      const local = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const utc = d.toISOString().substr(11, 8);
+      return `${local} (${utc} UTC)`;
     } catch (e) {
       return String(ts);
     }
