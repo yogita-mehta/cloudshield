@@ -54,6 +54,7 @@ export default function App() {
   // Interactive test request state
   const [lastResponse, setLastResponse] = useState(null);
   const [testingTraffic, setTestingTraffic] = useState(false);
+  const activeSimRef = React.useRef(null);
 
   // Polling loop
   const pollTelemetry = async () => {
@@ -62,10 +63,14 @@ export default function App() {
       if (metrics) setTelemetry(metrics);
       const hist = await fetchTelemetryHistory();
       if (hist && hist.length > 0) setHistory(hist);
-      const det = await fetchDetectionStatus();
-      if (det) setDetection(det);
-      const mit = await fetchMitigationStatus();
-      if (mit) setMitigation(mit);
+      
+      // If a simulation is active in the lab UI, don't let idle server background poll wipe it
+      if (!activeSimRef.current) {
+        const det = await fetchDetectionStatus();
+        if (det) setDetection(det);
+        const mit = await fetchMitigationStatus();
+        if (mit) setMitigation(mit);
+      }
     } catch (err) {
       console.debug('Telemetry poll error:', err);
     }
@@ -85,7 +90,7 @@ export default function App() {
 
     try {
       const inc = await fetchIncidents();
-      setIncidents(inc);
+      if (inc && inc.length > 0) setIncidents(inc);
       const sess = await checkSession();
       setAuth(sess);
     } catch (err) {
@@ -149,6 +154,7 @@ export default function App() {
   };
 
   const handleResetSystem = async () => {
+    activeSimRef.current = null;
     await resetSystem();
     setDetection({
       classification: "NORMAL",
@@ -157,15 +163,22 @@ export default function App() {
       ip_entropy: 2.80,
       baseline_rps: 5.0
     });
+    setMitigation({
+      active_tier: "NONE",
+      blocked_ip_count: 0,
+      blocked_ips: []
+    });
     await loadSystemState();
     alert('System reset to baseline normal state.');
   };
 
   const handleRunSimulation = async (type) => {
+    activeSimRef.current = type;
     if (type === 'honeypot') {
       try {
         await triggerHoneypot();
-        await blockIp("203.0.113.199", "Decoy Tripwire: Scanner accessed /admin-backup/");
+        const blockRes = await blockIp("203.0.113.199", "Decoy Tripwire: Scanner accessed /admin-backup/");
+        await setMitigationTier("TIER_2", "Honeypot Decoy Tripwire Breach");
         const newInc = await createDemoIncident("ATTACK", "TIER_2", {
           source_ip: "203.0.113.199",
           requests_per_sec: 1.0,
@@ -174,7 +187,8 @@ export default function App() {
           ip_entropy: 0.0,
           verdict_reason: "High-confidence tripwire: Adversary scanner accessed decoy /admin-backup/. Auto-blocked IP 203.0.113.199 in Tier 2."
         });
-        setIncidents((prev) => [newInc, ...prev]);
+        const freshIncidents = await fetchIncidents();
+        setIncidents(freshIncidents.length > 0 ? freshIncidents : [newInc]);
         setDetection({
           classification: "ATTACK",
           verdict_reason: "Honeypot decoy tripwire breached by IP 203.0.113.199. Auto-blocked in Tier 2.",
@@ -182,23 +196,28 @@ export default function App() {
           ip_entropy: 0.0,
           baseline_rps: 5.0
         });
-        await setMitigationTier("TIER_2", "Honeypot Decoy Tripwire Breach");
-        await loadSystemState();
+        setMitigation({
+          active_tier: "TIER_2",
+          blocked_ip_count: blockRes.mitigation_status?.blocked_ip_count || 1,
+          blocked_ips: blockRes.mitigation_status?.blocked_ips || ["203.0.113.199"]
+        });
       } catch (err) {
         console.error("Honeypot simulation error:", err);
       }
     } else if (type === 'attack') {
       try {
-        await blockIp("198.51.100.99", "Single-path HTTP Flood Attack Signature");
+        const blockRes = await blockIp("198.51.100.99", "Single-path HTTP Flood Attack Signature");
+        await setMitigationTier("TIER_2", "Simulated HTTP Flood Attack");
         const newInc = await createDemoIncident("ATTACK", "TIER_2", {
           source_ip: "198.51.100.99",
           requests_per_sec: 420.5,
           baseline_rps: 12.0,
           url_entropy: 0.35,
           ip_entropy: 0.95,
-          verdict_reason: "High requests/sec surge with collapsed URL entropy. Single-path HTTP flood attack."
+          verdict_reason: "High requests/sec surge with collapsed URL entropy (0.35). Single-path HTTP flood attack."
         });
-        setIncidents((prev) => [newInc, ...prev]);
+        const freshIncidents = await fetchIncidents();
+        setIncidents(freshIncidents.length > 0 ? freshIncidents : [newInc]);
         setDetection({
           classification: "ATTACK",
           verdict_reason: "High requests/sec surge with collapsed URL entropy (0.35). Single-path flood signature.",
@@ -206,13 +225,21 @@ export default function App() {
           ip_entropy: 0.95,
           baseline_rps: 12.0
         });
-        await setMitigationTier("TIER_2", "Simulated HTTP Flood Attack");
-        await loadSystemState();
+        setMitigation({
+          active_tier: "TIER_2",
+          blocked_ip_count: blockRes.mitigation_status?.blocked_ip_count || 1,
+          blocked_ips: blockRes.mitigation_status?.blocked_ips || ["198.51.100.99"]
+        });
+        setTelemetry((prev) => ({
+          ...prev,
+          requests_per_sec: 420.5
+        }));
       } catch (err) {
         console.error("Attack simulation error:", err);
       }
     } else if (type === 'flash_crowd') {
       try {
+        await setMitigationTier("TIER_3", "Simulated Legitimate Flash Crowd (Scale-Out)");
         const newInc = await createDemoIncident("FLASH_CROWD", "TIER_3", {
           source_ip: "Diverse Cluster (50+ IPs)",
           requests_per_sec: 185.0,
@@ -221,7 +248,8 @@ export default function App() {
           ip_entropy: 2.92,
           verdict_reason: "Legitimate flash crowd detected: High RPS surge with high URL/IP entropy. Triggering Tier 3 Horizontal Scale-Out."
         });
-        setIncidents((prev) => [newInc, ...prev]);
+        const freshIncidents = await fetchIncidents();
+        setIncidents(freshIncidents.length > 0 ? freshIncidents : [newInc]);
         setDetection({
           classification: "FLASH_CROWD",
           verdict_reason: "Legitimate flash crowd detected: High RPS surge with high entropy. Triggering Tier 3 Scale-Out.",
@@ -229,8 +257,15 @@ export default function App() {
           ip_entropy: 2.92,
           baseline_rps: 12.0
         });
-        await setMitigationTier("TIER_3", "Simulated Legitimate Flash Crowd (Scale-Out)");
-        await loadSystemState();
+        setMitigation({
+          active_tier: "TIER_3",
+          blocked_ip_count: mitigation?.blocked_ip_count || 0,
+          blocked_ips: mitigation?.blocked_ips || []
+        });
+        setTelemetry((prev) => ({
+          ...prev,
+          requests_per_sec: 185.0
+        }));
       } catch (err) {
         console.error("Flash crowd simulation error:", err);
       }

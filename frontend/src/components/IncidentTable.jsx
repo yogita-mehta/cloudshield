@@ -3,7 +3,23 @@ import StatusBadge from './StatusBadge';
 import { AlertTriangle, CheckCircle, Info } from 'lucide-react';
 
 export default function IncidentTable({ incidents, onSelectIncident }) {
-  if (!incidents || incidents.length === 0) {
+  const sortedIncidents = [...(incidents || [])].sort((a, b) => {
+    if (b.id && a.id) return b.id - a.id;
+    return new Date(b.timestamp) - new Date(a.timestamp);
+  });
+
+  const formatTimestamp = (ts) => {
+    if (!ts) return new Date().toLocaleTimeString();
+    try {
+      const raw = typeof ts === 'string' && !ts.endsWith('Z') ? ts + 'Z' : ts;
+      const d = new Date(raw);
+      return isNaN(d.getTime()) ? new Date(ts).toLocaleTimeString() : d.toLocaleTimeString();
+    } catch (e) {
+      return String(ts);
+    }
+  };
+
+  if (!sortedIncidents || sortedIncidents.length === 0) {
     return (
       <div className="bg-slate-800/40 border border-slate-700/60 rounded-xl p-8 text-center">
         <CheckCircle className="w-10 h-10 text-emerald-400 mx-auto mb-3 opacity-80" />
@@ -40,14 +56,14 @@ export default function IncidentTable({ incidents, onSelectIncident }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700/40">
-            {incidents.map((inc) => (
+            {sortedIncidents.map((inc) => (
               <tr
-                key={inc.id}
+                key={inc.id || Math.random()}
                 onClick={() => onSelectIncident && onSelectIncident(inc)}
                 className="hover:bg-slate-700/40 cursor-pointer transition-colors"
               >
                 <td className="px-4 py-3 font-mono text-slate-300">
-                  {new Date(inc.timestamp).toLocaleTimeString()}
+                  {formatTimestamp(inc.timestamp)}
                 </td>
                 <td className="px-4 py-3">
                   <StatusBadge classification={inc.classification} />
