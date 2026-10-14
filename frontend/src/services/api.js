@@ -132,7 +132,7 @@ export async function resetSystem() {
 
 export async function triggerHoneypot() {
   try {
-    await fetch(`${API_BASE}/api/v1/wp-login.php`, { method: 'GET' });
+    await fetch(`${API_BASE}/admin-backup/`, { method: 'GET' });
   } catch (e) {}
 }
 
@@ -148,7 +148,7 @@ export async function sendSampleRequest() {
   };
 }
 
-export async function createDemoIncident(classification = "SUSPICIOUS", tier = "TIER_1") {
+export async function createDemoIncident(classification = "SUSPICIOUS", tier = "TIER_1", customData = {}) {
   const payload = {
     classification,
     mitigation_tier: tier,
@@ -158,7 +158,8 @@ export async function createDemoIncident(classification = "SUSPICIOUS", tier = "
     url_entropy: 0.82,
     ip_entropy: 1.15,
     verdict_reason: "High requests/sec surge with low URL entropy. Single-path flood signature.",
-    is_active: true
+    is_active: true,
+    ...customData
   };
   const res = await fetch(`${API_BASE}/api/v1/incidents/`, {
     method: 'POST',

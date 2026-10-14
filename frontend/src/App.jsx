@@ -150,24 +150,90 @@ export default function App() {
 
   const handleResetSystem = async () => {
     await resetSystem();
+    setDetection({
+      classification: "NORMAL",
+      verdict_reason: "Metrics within baseline thresholds",
+      url_entropy: 2.50,
+      ip_entropy: 2.80,
+      baseline_rps: 5.0
+    });
     await loadSystemState();
     alert('System reset to baseline normal state.');
   };
 
   const handleRunSimulation = async (type) => {
     if (type === 'honeypot') {
-      await triggerHoneypot();
-      await loadSystemState();
+      try {
+        await triggerHoneypot();
+        await blockIp("203.0.113.199", "Decoy Tripwire: Scanner accessed /admin-backup/");
+        const newInc = await createDemoIncident("ATTACK", "TIER_2", {
+          source_ip: "203.0.113.199",
+          requests_per_sec: 1.0,
+          baseline_rps: 5.0,
+          url_entropy: 0.0,
+          ip_entropy: 0.0,
+          verdict_reason: "High-confidence tripwire: Adversary scanner accessed decoy /admin-backup/. Auto-blocked IP 203.0.113.199 in Tier 2."
+        });
+        setIncidents((prev) => [newInc, ...prev]);
+        setDetection({
+          classification: "ATTACK",
+          verdict_reason: "Honeypot decoy tripwire breached by IP 203.0.113.199. Auto-blocked in Tier 2.",
+          url_entropy: 0.0,
+          ip_entropy: 0.0,
+          baseline_rps: 5.0
+        });
+        await setMitigationTier("TIER_2", "Honeypot Decoy Tripwire Breach");
+        await loadSystemState();
+      } catch (err) {
+        console.error("Honeypot simulation error:", err);
+      }
     } else if (type === 'attack') {
-      const newInc = await createDemoIncident("ATTACK", "TIER_2");
-      setIncidents((prev) => [newInc, ...prev]);
-      await setMitigationTier("TIER_2", "Simulated HTTP Flood Flood Attack");
-      await pollTelemetry();
+      try {
+        await blockIp("198.51.100.99", "Single-path HTTP Flood Attack Signature");
+        const newInc = await createDemoIncident("ATTACK", "TIER_2", {
+          source_ip: "198.51.100.99",
+          requests_per_sec: 420.5,
+          baseline_rps: 12.0,
+          url_entropy: 0.35,
+          ip_entropy: 0.95,
+          verdict_reason: "High requests/sec surge with collapsed URL entropy. Single-path HTTP flood attack."
+        });
+        setIncidents((prev) => [newInc, ...prev]);
+        setDetection({
+          classification: "ATTACK",
+          verdict_reason: "High requests/sec surge with collapsed URL entropy (0.35). Single-path flood signature.",
+          url_entropy: 0.35,
+          ip_entropy: 0.95,
+          baseline_rps: 12.0
+        });
+        await setMitigationTier("TIER_2", "Simulated HTTP Flood Attack");
+        await loadSystemState();
+      } catch (err) {
+        console.error("Attack simulation error:", err);
+      }
     } else if (type === 'flash_crowd') {
-      const newInc = await createDemoIncident("FLASH_CROWD", "TIER_3");
-      setIncidents((prev) => [newInc, ...prev]);
-      await setMitigationTier("TIER_3", "Simulated Legitimate Flash Crowd (Scale-Out)");
-      await pollTelemetry();
+      try {
+        const newInc = await createDemoIncident("FLASH_CROWD", "TIER_3", {
+          source_ip: "Diverse Cluster (50+ IPs)",
+          requests_per_sec: 185.0,
+          baseline_rps: 12.0,
+          url_entropy: 2.85,
+          ip_entropy: 2.92,
+          verdict_reason: "Legitimate flash crowd detected: High RPS surge with high URL/IP entropy. Triggering Tier 3 Horizontal Scale-Out."
+        });
+        setIncidents((prev) => [newInc, ...prev]);
+        setDetection({
+          classification: "FLASH_CROWD",
+          verdict_reason: "Legitimate flash crowd detected: High RPS surge with high entropy. Triggering Tier 3 Scale-Out.",
+          url_entropy: 2.85,
+          ip_entropy: 2.92,
+          baseline_rps: 12.0
+        });
+        await setMitigationTier("TIER_3", "Simulated Legitimate Flash Crowd (Scale-Out)");
+        await loadSystemState();
+      } catch (err) {
+        console.error("Flash crowd simulation error:", err);
+      }
     }
   };
 
