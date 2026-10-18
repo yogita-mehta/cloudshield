@@ -8,12 +8,24 @@ Simulates a legitimate Flash Crowd event against CloudShield:
 - Verifies that CloudShield classifies this as FLASH_CROWD rather than an attack
 """
 
+import os
+import sys
 import time
 import random
 import urllib.request
 import urllib.error
 import argparse
 from concurrent.futures import ThreadPoolExecutor
+
+SIMULATION_TOKEN = os.getenv("SIMULATION_TOKEN")
+if not SIMULATION_TOKEN or not SIMULATION_TOKEN.strip():
+    print("[ERROR] SIMULATION_TOKEN environment variable is not set or empty.", file=sys.stderr)
+    print("Please set SIMULATION_TOKEN before running simulation scripts, e.g.:", file=sys.stderr)
+    print("  $env:SIMULATION_TOKEN=\"your-token\"  (PowerShell)", file=sys.stderr)
+    print("  export SIMULATION_TOKEN=\"your-token\"  (Linux/macOS)", file=sys.stderr)
+    sys.exit(1)
+
+SIMULATION_TOKEN = SIMULATION_TOKEN.strip()
 
 BASE_URL = "http://localhost:8080"
 
@@ -40,6 +52,8 @@ def send_flash_request(seq: int):
     headers = {
         "User-Agent": f"LegitimateUser-Browser/114.0 (client-{seq})",
         "X-Forwarded-For": client_ip,
+        "X-Simulation-Token": SIMULATION_TOKEN,
+        "X-Simulated-IP": client_ip,
         "Accept": "application/json"
     }
 

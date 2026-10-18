@@ -63,11 +63,7 @@ app.add_middleware(
 )
 
 # Request Instrumentation & Tier 2 IP Firewall Middleware
-def get_origin_ip(request: Request) -> str:
-    xff = request.headers.get("x-forwarded-for")
-    if xff:
-        return xff.split(",")[0].strip()
-    return request.headers.get("x-real-ip") or (request.client.host if request.client else "127.0.0.1")
+from app.core.proxy import get_origin_ip
 
 @app.middleware("http")
 async def monitor_and_filter_requests(request: Request, call_next):

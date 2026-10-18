@@ -14,11 +14,7 @@ router = APIRouter()
 # In-memory log of honeypot triggers
 _honeypot_log: List[Dict[str, Any]] = []
 
-def get_origin_ip(request: Request) -> str:
-    xff = request.headers.get("x-forwarded-for")
-    if xff:
-        return xff.split(",")[0].strip()
-    return request.headers.get("x-real-ip") or (request.client.host if request.client else "127.0.0.1")
+from app.core.proxy import get_origin_ip
 
 def record_honeypot_hit(request: Request, endpoint: str, db: Session):
     """Processes a honeypot trigger event."""

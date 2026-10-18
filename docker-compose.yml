@@ -8,6 +8,7 @@ services:
       - SERVER_NAME=backend-1
       - ENVIRONMENT=development
       - DATABASE_URL=sqlite:////app/data/cloudshield.db
+      - SIMULATION_TOKEN=${SIMULATION_TOKEN:-}
     volumes:
       - ./data:/app/data
       - ./nginx/conf.d:/app/nginx_conf
@@ -26,6 +27,7 @@ services:
       - SERVER_NAME=backend-2
       - ENVIRONMENT=development
       - DATABASE_URL=sqlite:////app/data/cloudshield.db
+      - SIMULATION_TOKEN=${SIMULATION_TOKEN:-}
     volumes:
       - ./data:/app/data
       - ./nginx/conf.d:/app/nginx_conf

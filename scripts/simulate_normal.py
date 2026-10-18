@@ -8,11 +8,26 @@ Simulates legitimate, diverse client traffic against CloudShield:
 - Healthy Shannon entropy across IPs and URLs
 """
 
+import os
+import sys
 import time
 import random
 import urllib.request
 import urllib.error
 import argparse
+
+SIMULATION_TOKEN = os.getenv("SIMULATION_TOKEN")
+if not SIMULATION_TOKEN:
+    env_file = os.path.join(os.path.dirname(__file__), "..", ".env")
+    if os.path.exists(env_file):
+        try:
+            with open(env_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.startswith("SIMULATION_TOKEN="):
+                        SIMULATION_TOKEN = line.split("=", 1)[1].strip()
+                        break
+        except Exception:
+            pass
 
 TARGET_URL = "http://localhost:8080"
 
@@ -38,6 +53,10 @@ def run_simulation(duration_seconds: int = 15, requests_per_sec: float = 10.0):
     print("=" * 60)
     print(f"CloudShield Normal Traffic Simulation")
     print(f"Duration: {duration_seconds}s | Target RPS: {requests_per_sec}")
+    if SIMULATION_TOKEN:
+        print("Simulation Token: Configured (synthetic IPs enabled)")
+    else:
+        print("Simulation Token: Not configured (arriving from socket peer)")
     print("=" * 60)
 
     start_time = time.time()
@@ -52,7 +71,13 @@ def run_simulation(duration_seconds: int = 15, requests_per_sec: float = 10.0):
         ua = random.choice(USER_AGENTS)
         url = f"{TARGET_URL}{endpoint}"
 
-        req = urllib.request.Request(url, headers={"User-Agent": ua})
+        headers = {"User-Agent": ua}
+        if SIMULATION_TOKEN:
+            client_ip = f"198.18.1.{random.randint(1, 50)}"
+            headers["X-Simulation-Token"] = SIMULATION_TOKEN
+            headers["X-Simulated-IP"] = client_ip
+
+        req = urllib.request.Request(url, headers=headers)
         t0 = time.time()
         try:
             with urllib.request.urlopen(req, timeout=3.0) as resp:

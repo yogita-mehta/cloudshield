@@ -29,8 +29,49 @@ async def query_prometheus(query: str) -> float:
         logger.debug(f"Prometheus query failed for '{query}': {e}")
     return 0.0
 
-def read_recent_access_logs(seconds_window: int = 10) -> List[Dict[str, Any]]:
-    """Reads JSON access logs within the last N seconds."""
+from app.core.proxy import extract_client_ip
+
+# Dashboard and internal monitoring endpoints excluded from traffic analytics
+INTERNAL_POLLING_PREFIXES = (
+    "/api/v1/monitoring/",
+    "/api/v1/detection/",
+    "/api/v1/mitigation/",
+    "/api/v1/auth/me",
+    "/api/v1/health",
+    "/health",
+    "/metrics",
+    "/stub_status",
+    "/nginx-health",
+    "/favicon.ico",
+)
+
+def is_internal_polling_request(uri: str, method: str = "GET") -> bool:
+    """
+    Identifies automated dashboard / telemetry polling queries that should be
+    excluded from Layer-7 traffic and entropy calculations to prevent self-poisoning.
+    Never filters honeypot decoys, admin actions (POST), or application endpoints.
+    """
+    if not uri:
+        return False
+    clean_uri = uri.split("?")[0]
+
+    # Exclude standard telemetry, health, and status query paths
+    if any(clean_uri.startswith(prefix) for prefix in INTERNAL_POLLING_PREFIXES):
+        return True
+
+    # The React dashboard polls GET /api/v1/incidents/ every 10s
+    if method.upper() == "GET" and clean_uri.rstrip("/").endswith("/api/v1/incidents"):
+        return True
+
+    return False
+
+def read_recent_access_logs(seconds_window: int = 10, filter_internal: bool = True) -> List[Dict[str, Any]]:
+    """
+    Reads JSON access logs within the last N seconds.
+    - Supports millisecond-precision timestamps ('msec') with fallback to ISO 'time_local'.
+    - Filters internal dashboard polling queries when filter_internal=True to prevent self-poisoning.
+    - Resolves authenticated client-IP using trusted reverse-proxy chain traversal.
+    """
     entries = []
     if not os.path.exists(LOGS_PATH):
         return entries
@@ -38,20 +79,63 @@ def read_recent_access_logs(seconds_window: int = 10) -> List[Dict[str, Any]]:
     now = time.time()
     try:
         with open(LOGS_PATH, "r", encoding="utf-8", errors="ignore") as f:
-            # Read last 500 lines for efficiency
-            lines = f.readlines()[-500:]
+            # Read last 1500 lines for efficiency (covers bursts up to 150 req/s over 10s)
+            lines = f.readlines()[-1500:]
             for line in lines:
                 line = line.strip()
                 if not line or not line.startswith("{"):
                     continue
                 try:
                     data = json.loads(line)
-                    time_iso = data.get("time_local")
-                    if time_iso:
-                        # ISO format: 2026-10-05T05:22:45+00:00
-                        ts = datetime.fromisoformat(time_iso.replace("Z", "+00:00")).timestamp()
-                        if now - ts <= seconds_window:
-                            entries.append(data)
+
+                    # 1. High-resolution timestamp parsing ('msec' with fallback to 'time_local')
+                    ts = None
+                    msec_raw = data.get("msec")
+                    if msec_raw is not None:
+                        try:
+                            ts = float(msec_raw)
+                        except (ValueError, TypeError):
+                            ts = None
+
+                    if ts is None:
+                        time_iso = data.get("time_local")
+                        if time_iso:
+                            try:
+                                ts = datetime.fromisoformat(time_iso.replace("Z", "+00:00")).timestamp()
+                            except Exception:
+                                ts = None
+
+                    if ts is None:
+                        continue
+
+                    # Window check (allow up to 2.0s future clock drift for container time jitter)
+                    if (now - ts) > seconds_window or (ts - now) > 2.0:
+                        continue
+
+                    data["timestamp"] = ts
+
+                    # 2. Exclude internal telemetry polling requests if requested
+                    uri = data.get("request_uri", "")
+                    method = data.get("request_method", "GET")
+                    if filter_internal and is_internal_polling_request(uri, method):
+                        continue
+
+                    # 3. Client-IP attribution via trusted proxy policy and simulation channel
+                    peer_ip = data.get("remote_addr")
+                    xff = data.get("x_forwarded_for")
+                    sim_token = data.get("sim_token")
+                    sim_ip = data.get("sim_ip")
+                    client_ip = extract_client_ip(
+                        peer_ip=peer_ip,
+                        xff_header=xff,
+                        sim_token=sim_token,
+                        sim_ip=sim_ip
+                    )
+                    data["client_ip"] = client_ip
+                    # Set remote_addr to resolved client IP to preserve backward compatibility
+                    data["remote_addr"] = client_ip
+
+                    entries.append(data)
                 except Exception:
                     continue
     except Exception as e:
@@ -86,12 +170,24 @@ async def get_current_metrics() -> Dict[str, Any]:
     log_count = len(log_entries)
     if log_count > 0:
         log_rps = log_count / 10.0
-        if rps == 0.0:
-            rps = log_rps
+        # Select the more responsive measurement: log_rps avoids Prometheus scrape delay/warming lag during sudden bursts
+        rps = max(rps, log_rps)
         
         # Calculate 5xx errors from logs
         errors_5xx = sum(1 for e in log_entries if int(e.get("status", 200)) >= 500)
         error_rate = (errors_5xx / log_count) * 100.0
+
+        # Partition proxy-level rate-limiting drops from genuine upstream application errors
+        upstream_5xx = sum(
+            1 for e in log_entries
+            if int(e.get("status", 200)) >= 500 and bool(e.get("upstream_addr")) and e.get("upstream_addr") != "-"
+        )
+        upstream_error_rate = (upstream_5xx / log_count) * 100.0
+        proxy_rate_limited_count = sum(
+            1 for e in log_entries
+            if int(e.get("status", 200)) == 503 and (not bool(e.get("upstream_addr")) or e.get("upstream_addr") == "-")
+        )
+        proxy_rate_limited_rate = (proxy_rate_limited_count / log_count) * 100.0
 
         # Calculate average request latency
         durations = [float(e.get("request_time", 0.0)) for e in log_entries]
@@ -102,6 +198,8 @@ async def get_current_metrics() -> Dict[str, Any]:
         bandwidth_kbps = (total_bytes * 8.0) / (10.0 * 1024.0)
     else:
         error_rate = 0.0
+        upstream_error_rate = 0.0
+        proxy_rate_limited_rate = 0.0
         avg_latency = 18.0
         bandwidth_kbps = max(rps * 1.2, 2.5)
 
@@ -115,6 +213,8 @@ async def get_current_metrics() -> Dict[str, Any]:
         "active_connections": int(active_conn),
         "bandwidth_kbps": round(bandwidth_kbps, 1),
         "error_rate_5xx": round(error_rate, 2),
+        "upstream_error_rate_5xx": round(upstream_error_rate, 2),
+        "proxy_rate_limited_rate_503": round(proxy_rate_limited_rate, 2),
         "latency_ms": round(avg_latency, 1)
     }
 

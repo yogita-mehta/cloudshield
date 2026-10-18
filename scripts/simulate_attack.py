@@ -7,19 +7,33 @@ Simulates a safe, controlled HTTP Flood DDoS attack against local CloudShield:
 - Intended to trigger Tier 1 rate-limiting and Tier 2 IP mitigation
 """
 
+import os
+import sys
 import time
 import urllib.request
 import urllib.error
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 
+SIMULATION_TOKEN = os.getenv("SIMULATION_TOKEN")
+if not SIMULATION_TOKEN or not SIMULATION_TOKEN.strip():
+    print("[ERROR] SIMULATION_TOKEN environment variable is not set or empty.", file=sys.stderr)
+    print("Please set SIMULATION_TOKEN before running simulation scripts, e.g.:", file=sys.stderr)
+    print("  $env:SIMULATION_TOKEN=\"your-token\"  (PowerShell)", file=sys.stderr)
+    print("  export SIMULATION_TOKEN=\"your-token\"  (Linux/macOS)", file=sys.stderr)
+    sys.exit(1)
+
+SIMULATION_TOKEN = SIMULATION_TOKEN.strip()
+
 TARGET_URL = "http://localhost:8080/api/v1/sample/hello"
 
 def send_attack_request(client_id: int):
-    # Spoof attack headers to simulate external adversary
+    client_ip = f"198.51.100.{10 + (client_id % 3)}"  # Concentrated attacker IPs
     headers = {
         "User-Agent": "FloodBot/3.0 (CloudShield-Lab-Simulation)",
-        "X-Forwarded-For": f"198.51.100.{10 + (client_id % 3)}",  # Concentrated attacker IPs
+        "X-Forwarded-For": client_ip,
+        "X-Simulation-Token": SIMULATION_TOKEN,
+        "X-Simulated-IP": client_ip,
         "Accept": "*/*"
     }
     req = urllib.request.Request(TARGET_URL, headers=headers)

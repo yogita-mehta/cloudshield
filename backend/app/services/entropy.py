@@ -41,9 +41,20 @@ class EntropyEngine:
     def update_baselines(self, ip_entropy: float, url_entropy: float, rps: float, is_normal: bool = True):
         """Updates EWMA baselines only when traffic is classified as normal/healthy."""
         if is_normal and rps > 0:
-            self.ewma_ip_entropy = (self.alpha * ip_entropy) + ((1 - self.alpha) * self.ewma_ip_entropy)
-            self.ewma_url_entropy = (self.alpha * url_entropy) + ((1 - self.alpha) * self.ewma_url_entropy)
-            self.ewma_rps = (self.alpha * rps) + ((1 - self.alpha) * self.ewma_rps)
+            # Update IP entropy baseline with boundary clamping [1.0, 6.0]
+            if ip_entropy > 0.5:
+                raw_ip = (self.alpha * ip_entropy) + ((1 - self.alpha) * self.ewma_ip_entropy)
+                self.ewma_ip_entropy = round(max(1.0, min(6.0, raw_ip)), 3)
+
+            # Proposal B: Guard against baseline poisoning from single-endpoint probe or low-rate floods
+            # Only update URL baseline if traffic demonstrates genuine multi-path diversity
+            if url_entropy > 0.8:
+                raw_url = (self.alpha * url_entropy) + ((1 - self.alpha) * self.ewma_url_entropy)
+                self.ewma_url_entropy = round(max(1.5, min(4.0, raw_url)), 3)
+
+            # Update RPS baseline with boundary clamping [1.0, 25.0]
+            raw_rps = (self.alpha * rps) + ((1 - self.alpha) * self.ewma_rps)
+            self.ewma_rps = round(max(1.0, min(25.0, raw_rps)), 1)
 
     def analyze_entropy(self, ips: List[str], urls: List[str]) -> Dict[str, Any]:
         """
@@ -59,6 +70,10 @@ class EntropyEngine:
 
         ip_z_score = round(ip_deviation / max(self.std_ip_entropy, 0.05), 2)
         url_z_score = round(url_deviation / max(self.std_url_entropy, 0.05), 2)
+
+        # Directional drop deviation: positive only when entropy drops below baseline (collapse in URL diversity)
+        url_drop_deviation = max(0.0, self.ewma_url_entropy - current_url_entropy)
+        url_z_drop = round(url_drop_deviation / max(self.std_url_entropy, 0.05), 2)
 
         # Top IP concentration calculation
         top_ip_percentage = 0.0
@@ -78,6 +93,7 @@ class EntropyEngine:
             "url_entropy_baseline": round(self.ewma_url_entropy, 3),
             "url_deviation": round(url_deviation, 3),
             "url_z_score": url_z_score,
+            "url_z_drop": url_z_drop,
             "top_ip": top_ip,
             "top_ip_concentration_pct": top_ip_percentage
         }

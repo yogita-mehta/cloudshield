@@ -7,12 +7,11 @@ logger = logging.getLogger("cloudshield.mitigation")
 
 BLOCKLIST_FILE = os.getenv("NGINX_BLOCKLIST_PATH", "/app/nginx_conf/blocklist.conf")
 
-# Default protected allowlist (loopback, internal docker subnet, monitoring probes)
+# Default protected allowlist (loopback, internal service nodes, monitoring probes)
 DEFAULT_ALLOWLIST: Set[str] = {
     "127.0.0.1",
     "::1",
     "localhost",
-    "172.28.0.1",
     "172.28.0.10",
     "172.28.0.20",
     "172.28.0.21",

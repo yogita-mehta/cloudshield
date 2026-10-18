@@ -85,10 +85,12 @@ class DetectionEngine:
         baseline_rps = entropy_engine.ewma_rps
         cpu = metrics.get("cpu_utilization", 0.0)
         error_rate = metrics.get("error_rate_5xx", 0.0)
+        upstream_error_rate = metrics.get("upstream_error_rate_5xx", error_rate)
         latency = metrics.get("latency_ms", 0.0)
 
         url_entropy = entropy_res["url_entropy"]
         url_z = entropy_res["url_z_score"]
+        url_z_drop = entropy_res.get("url_z_drop", 0.0)
         ip_entropy = entropy_res["ip_entropy"]
         top_ip = entropy_res["top_ip"]
         top_ip_pct = entropy_res["top_ip_concentration_pct"]
@@ -110,14 +112,18 @@ class DetectionEngine:
         # Check Request Rate & Entropy
         elif rps > max(baseline_rps * 3.5, 30.0):
             # Surge detected - Distinguish Attack vs Flash Crowd
-            if url_z > 2.0 or top_ip_pct > 55.0 or error_rate > 15.0:
+            # Proposal A: Distinguish drop in URL diversity (attack targeting few URIs) from increased diversity (flash crowd)
+            # Proposal A+: Distinguish upstream backend failures from proxy-level rate limiting drops
+            # Stage 3B: Absolute low-entropy floor (H <= 0.8 means traffic is concentrated on 1-2 URLs)
+            is_low_url_entropy = (url_z_drop > 2.0) or (url_entropy <= 0.8)
+            if is_low_url_entropy or top_ip_pct >= 50.0 or upstream_error_rate > 15.0:
                 classification = "ATTACK"
-                mitigation_tier = "TIER_2" if top_ip_pct > 60.0 else "TIER_1"
+                mitigation_tier = "TIER_2" if top_ip_pct >= 50.0 else "TIER_1"
                 reasons.append(
                     f"Traffic flood: {rps} req/s (baseline {baseline_rps:.1f} req/s). "
-                    f"Low URL entropy ({url_entropy:.2f}, z={url_z}) and high top-IP concentration ({top_ip_pct}%)."
+                    f"Low URL entropy ({url_entropy:.2f}, drop_z={url_z_drop}) and high top-IP concentration ({top_ip_pct}%)."
                 )
-                if top_ip and top_ip_pct > 60.0:
+                if top_ip and top_ip_pct >= 50.0:
                     mitigation_engine.block_ip(top_ip, reason=f"Accounted for {top_ip_pct}% of flood traffic")
             else:
                 # High traffic volume, but diverse URLs and balanced IP distribution
@@ -128,15 +134,15 @@ class DetectionEngine:
                     f"and distributed IPs (top IP only {top_ip_pct}%). Flash crowd pattern."
                 )
 
-        elif rps > max(baseline_rps * 1.8, 15.0) or cpu > 70.0 or error_rate > 10.0:
+        elif rps > max(baseline_rps * 1.8, 15.0) or cpu > 70.0 or upstream_error_rate > 10.0:
             classification = "SUSPICIOUS"
             mitigation_tier = "TIER_1"
             if rps > baseline_rps * 1.8:
                 reasons.append(f"Moderate RPS elevation: {rps} req/s vs baseline {baseline_rps:.1f} req/s.")
             if cpu > 70.0:
                 reasons.append(f"Elevated CPU load: {cpu}%.")
-            if error_rate > 10.0:
-                reasons.append(f"Elevated 5xx error rate: {error_rate}%.")
+            if upstream_error_rate > 10.0:
+                reasons.append(f"Elevated upstream 5xx error rate: {upstream_error_rate}%.")
 
         else:
             classification = "NORMAL"
@@ -165,10 +171,12 @@ class DetectionEngine:
             "baseline_rps": round(baseline_rps, 1),
             "cpu_utilization": cpu,
             "error_rate_5xx": error_rate,
+            "upstream_error_rate_5xx": upstream_error_rate,
             "latency_ms": latency,
             "url_entropy": url_entropy,
             "url_entropy_baseline": entropy_res["url_entropy_baseline"],
             "url_z_score": url_z,
+            "url_z_drop": url_z_drop,
             "ip_entropy": ip_entropy,
             "ip_entropy_baseline": entropy_res["ip_entropy_baseline"],
             "top_ip": top_ip,

@@ -3,6 +3,8 @@ from datetime import datetime
 from fastapi import APIRouter, Request
 from app.core.config import settings
 
+from app.core.proxy import get_origin_ip
+
 router = APIRouter()
 
 # Local request counter to demonstrate load distribution
@@ -14,7 +16,7 @@ def sample_hello(request: Request):
     global _counter
     _counter += 1
     
-    client_ip = request.headers.get("x-real-ip") or request.headers.get("x-forwarded-for") or request.client.host
+    client_ip = get_origin_ip(request)
     
     return {
         "message": "Hello from CloudShield upstream application pool!",

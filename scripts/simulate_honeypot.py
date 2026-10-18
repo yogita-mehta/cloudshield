@@ -7,11 +7,23 @@ Simulates an adversary scanner probing CloudShield honeypot decoys:
 - Verifies that the offending IP is blocked from accessing benign endpoints
 """
 
+import os
+import sys
 import time
 import json
 import urllib.request
 import urllib.error
 import argparse
+
+SIMULATION_TOKEN = os.getenv("SIMULATION_TOKEN")
+if not SIMULATION_TOKEN or not SIMULATION_TOKEN.strip():
+    print("[ERROR] SIMULATION_TOKEN environment variable is not set or empty.", file=sys.stderr)
+    print("Please set SIMULATION_TOKEN before running simulation scripts, e.g.:", file=sys.stderr)
+    print("  $env:SIMULATION_TOKEN=\"your-token\"  (PowerShell)", file=sys.stderr)
+    print("  export SIMULATION_TOKEN=\"your-token\"  (Linux/macOS)", file=sys.stderr)
+    sys.exit(1)
+
+SIMULATION_TOKEN = SIMULATION_TOKEN.strip()
 
 BASE_URL = "http://localhost:8080"
 ATTACKER_IP = "203.0.113.199"
@@ -21,7 +33,9 @@ def probe_decoy(endpoint: str):
     url = f"{BASE_URL}{endpoint}"
     req = urllib.request.Request(url, headers={
         "User-Agent": "Nmap-Scripting-Engine/7.94",
-        "X-Forwarded-For": ATTACKER_IP
+        "X-Forwarded-For": ATTACKER_IP,
+        "X-Simulation-Token": SIMULATION_TOKEN,
+        "X-Simulated-IP": ATTACKER_IP
     })
     try:
         with urllib.request.urlopen(req, timeout=3.0) as resp:
@@ -36,7 +50,9 @@ def verify_blocklist():
     legit_url = f"{BASE_URL}/api/v1/sample/hello"
     req = urllib.request.Request(legit_url, headers={
         "User-Agent": "Mozilla/5.0",
-        "X-Forwarded-For": ATTACKER_IP
+        "X-Forwarded-For": ATTACKER_IP,
+        "X-Simulation-Token": SIMULATION_TOKEN,
+        "X-Simulated-IP": ATTACKER_IP
     })
     try:
         with urllib.request.urlopen(req, timeout=3.0) as resp:
