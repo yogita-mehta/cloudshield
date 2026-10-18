@@ -122,6 +122,17 @@ def root_health():
         "mitigation_tier": mitigation_engine.active_tier
     }
 
+# Root-level application endpoint
+@app.get("/", tags=["Health"])
+def root():
+    return {
+        "status": "healthy",
+        "service": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "server_node": settings.SERVER_NAME,
+        "mitigation_tier": mitigation_engine.active_tier
+    }
+
 # Include API v1 routers
 app.include_router(api_router, prefix=settings.API_V1_STR)
 

@@ -37,11 +37,15 @@ PROTECTED_ALLOWLIST_IPS: Set[str] = {
     "127.0.0.1",
     "::1",
     "localhost",
-    "172.28.0.10",
+    "172.28.0.1",   # Docker Compose cloudshield-net bridge gateway / host NAT IP
+    "172.28.0.10",  # CloudShield Nginx ingress proxy
+    "172.28.0.11",  # CloudShield backend-1
+    "172.28.0.12",  # CloudShield backend-2
     "172.28.0.20",
     "172.28.0.21",
     "172.28.0.22",
     "172.28.0.30",
+    "172.17.0.1",   # Default docker0 bridge gateway
 }
 
 # Trusted CIDR networks for local loopback proxy testing

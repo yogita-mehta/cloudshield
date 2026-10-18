@@ -1,22 +1,27 @@
 import os
 import time
 import logging
+import ipaddress
 from typing import Set, Dict, Any, List, Optional
 
 logger = logging.getLogger("cloudshield.mitigation")
 
 BLOCKLIST_FILE = os.getenv("NGINX_BLOCKLIST_PATH", "/app/nginx_conf/blocklist.conf")
 
-# Default protected allowlist (loopback, internal service nodes, monitoring probes)
+# Default protected allowlist (loopback, internal service nodes, monitoring probes, and Docker bridge gateways)
 DEFAULT_ALLOWLIST: Set[str] = {
     "127.0.0.1",
     "::1",
     "localhost",
-    "172.28.0.10",
-    "172.28.0.20",
-    "172.28.0.21",
-    "172.28.0.22",
-    "172.28.0.30"
+    "172.28.0.1",   # Docker Compose cloudshield-net bridge gateway / host NAT IP
+    "172.28.0.10",  # CloudShield Nginx ingress proxy
+    "172.28.0.11",  # CloudShield backend-1
+    "172.28.0.12",  # CloudShield backend-2
+    "172.28.0.20",  # Prometheus
+    "172.28.0.21",  # Node exporter
+    "172.28.0.22",  # Nginx exporter
+    "172.28.0.30",  # Frontend dashboard
+    "172.17.0.1",   # Default docker0 bridge gateway
 }
 
 class MitigationEngine:
@@ -40,6 +45,21 @@ class MitigationEngine:
         # Load existing blocklist from disk if available
         self._load_blocklist_from_disk()
 
+    def is_ip_protected(self, ip: str) -> bool:
+        """Checks if an IP is allowlisted or belongs to internal infrastructure."""
+        if not ip:
+            return False
+        clean_ip = ip.strip()
+        if clean_ip in self.allowlist:
+            return True
+        try:
+            addr = ipaddress.ip_address(clean_ip)
+            if addr.is_loopback or addr.is_unspecified or addr.is_link_local:
+                return True
+        except ValueError:
+            pass
+        return False
+
     def _load_blocklist_from_disk(self):
         """Reads existing deny directives from blocklist.conf."""
         if os.path.exists(BLOCKLIST_FILE):
@@ -52,7 +72,7 @@ class MitigationEngine:
                             line = line.strip()
                             if line.startswith("deny ") and line.endswith(";"):
                                 ip = line[5:-1].strip()
-                                if ip and ip not in self.allowlist:
+                                if ip and not self.is_ip_protected(ip):
                                     self.blocked_ips.add(ip)
             except Exception as e:
                 logger.error(f"Error loading blocklist: {e}")
@@ -65,7 +85,8 @@ class MitigationEngine:
                 f.write("# CloudShield Tier 2 Automated IP Blocklist\n")
                 f.write(f"# Updated at: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())}\n\n")
                 for ip in sorted(self.blocked_ips):
-                    f.write(f"deny {ip};\n")
+                    if not self.is_ip_protected(ip):
+                        f.write(f"deny {ip};\n")
             self._blocklist_mtime = os.path.getmtime(BLOCKLIST_FILE)
             logger.info(f"Synchronized {len(self.blocked_ips)} IPs to Nginx blocklist.conf")
         except Exception as e:
@@ -73,7 +94,7 @@ class MitigationEngine:
 
     def is_ip_blocked(self, ip: str) -> bool:
         """Checks if an IP is currently blocked (and not allowlisted)."""
-        if not ip or ip in self.allowlist:
+        if not ip or self.is_ip_protected(ip):
             return False
         if ip in self.blocked_ips:
             return True
@@ -86,8 +107,8 @@ class MitigationEngine:
         Adds an IP to the blocklist and triggers Tier 2 defense.
         Returns True if newly blocked, False if already blocked or allowlisted.
         """
-        if not ip or ip in self.allowlist:
-            logger.info(f"IP {ip} is protected by allowlist; block ignored.")
+        if not ip or self.is_ip_protected(ip):
+            logger.info(f"IP {ip} is protected by allowlist/infrastructure; block ignored.")
             return False
 
         if ip not in self.blocked_ips:

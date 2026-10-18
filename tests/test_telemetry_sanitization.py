@@ -444,3 +444,30 @@ def test_simulation_channel_accepts_valid_configured_token(monkeypatch):
         sim_ip="198.51.100.88"
     )
     assert resolved == "198.51.100.88"
+
+# ---------------------------------------------------------------------------
+# 6. Docker Gateway / Internal Infrastructure Protection Regression Tests
+# ---------------------------------------------------------------------------
+
+def test_docker_gateway_and_internal_ips_protected_from_blocking():
+    """
+    Verify that Docker bridge gateway (172.28.0.1, 172.17.0.1), loopback, and internal
+    container IPs are strictly protected and cannot be added to mitigation blocklist.
+    """
+    protected_ips = ["172.28.0.1", "172.17.0.1", "127.0.0.1", "172.28.0.11", "172.28.0.12"]
+    for ip in protected_ips:
+        assert mitigation_engine.is_ip_protected(ip) is True
+        result = mitigation_engine.block_ip(ip, reason="Test attempt to block gateway")
+        assert result is False
+        assert mitigation_engine.is_ip_blocked(ip) is False
+        assert ip not in mitigation_engine.blocked_ips
+
+def test_root_health_endpoint():
+    """Verify root / endpoint returns HTTP 200 with health details."""
+    resp = api_client.get("/")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["service"] == "CloudShield"
+    assert data["status"] == "healthy"
+
+

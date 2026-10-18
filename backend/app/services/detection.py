@@ -71,7 +71,7 @@ class DetectionEngine:
         for log in recent_logs:
             uri = log.get("request_uri", "")
             ip = log.get("remote_addr")
-            if ip and ip not in mitigation_engine.allowlist and any(decoy in uri for decoy in DECOY_PATHS):
+            if ip and not mitigation_engine.is_ip_protected(ip) and any(decoy in uri for decoy in DECOY_PATHS):
                 honeypot_hits.append({
                     "ip": ip,
                     "uri": uri,
@@ -123,7 +123,7 @@ class DetectionEngine:
                     f"Traffic flood: {rps} req/s (baseline {baseline_rps:.1f} req/s). "
                     f"Low URL entropy ({url_entropy:.2f}, drop_z={url_z_drop}) and high top-IP concentration ({top_ip_pct}%)."
                 )
-                if top_ip and top_ip_pct >= 50.0:
+                if top_ip and top_ip_pct >= 50.0 and not mitigation_engine.is_ip_protected(top_ip):
                     mitigation_engine.block_ip(top_ip, reason=f"Accounted for {top_ip_pct}% of flood traffic")
             else:
                 # High traffic volume, but diverse URLs and balanced IP distribution
