@@ -24,6 +24,15 @@ DEFAULT_ALLOWLIST: Set[str] = {
     "172.17.0.1",   # Default docker0 bridge gateway
 }
 
+# Networks that represent local host, Docker networks, LANs, and internal infrastructure
+PROTECTED_PRIVATE_NETWORKS = [
+    ipaddress.ip_network("10.0.0.0/8"),
+    ipaddress.ip_network("172.16.0.0/12"),
+    ipaddress.ip_network("192.168.0.0/16"),
+    ipaddress.ip_network("127.0.0.0/8"),
+    ipaddress.ip_network("169.254.0.0/16"),
+]
+
 class MitigationEngine:
     """
     Tiered Escalation & Recovery Engine for CloudShield:
@@ -46,7 +55,7 @@ class MitigationEngine:
         self._load_blocklist_from_disk()
 
     def is_ip_protected(self, ip: str) -> bool:
-        """Checks if an IP is allowlisted or belongs to internal infrastructure."""
+        """Checks if an IP is allowlisted or belongs to internal/private infrastructure."""
         if not ip:
             return False
         clean_ip = ip.strip()
@@ -56,9 +65,12 @@ class MitigationEngine:
             addr = ipaddress.ip_address(clean_ip)
             if addr.is_loopback or addr.is_unspecified or addr.is_link_local:
                 return True
+            if any(addr in net for net in PROTECTED_PRIVATE_NETWORKS):
+                return True
         except ValueError:
             pass
         return False
+
 
     def _load_blocklist_from_disk(self):
         """Reads existing deny directives from blocklist.conf."""

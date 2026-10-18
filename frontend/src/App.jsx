@@ -174,9 +174,9 @@ export default function App() {
     setActiveSimulation(type);
     if (type === 'honeypot') {
       try {
-        await triggerHoneypot();
         const blockRes = await blockIp("203.0.113.199", "Decoy Tripwire: Scanner accessed /admin-backup/");
         await setMitigationTier("TIER_2", "Honeypot Decoy Tripwire Breach");
+
         await sendBackendSimulation("ATTACK", "TIER_2", 0.0, 1.0, "High-confidence tripwire: Adversary scanner accessed decoy /admin-backup/. Auto-blocked in Tier 2.");
         const newInc = await createDemoIncident("ATTACK", "TIER_2", {
           source_ip: "203.0.113.199",
