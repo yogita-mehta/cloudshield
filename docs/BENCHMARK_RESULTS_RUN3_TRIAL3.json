@@ -1,0 +1,2149 @@
+{
+  "benchmark_metadata": {
+    "execution_timestamp": "2026-10-17T07:47:34.258454+00:00",
+    "target_url": "http://localhost:8080",
+    "results_file": "BENCHMARK_RESULTS_RUN3_TRIAL3.json",
+    "simulation_token_configured": true,
+    "total_scenarios_evaluated": 7,
+    "benchmark_completed": true,
+    "abort_reason": null,
+    "scheduler_type": "Precision Monotonic Rate-Controlled Scheduler (v2)",
+    "evaluation_validity": "RATE_LIMITED_OR_INCOMPLETE",
+    "all_workloads_fully_delivered": false,
+    "incomplete_scenarios": [
+      "1_normal_traffic",
+      "2_concentrated_flood",
+      "6_flash_crowd",
+      "7_ambiguous_traffic"
+    ],
+    "metric_scope_disclosure": "Precision, recall, FPR, and FNR are scenario-level metrics evaluating whether CloudShield classifies each of the 7 test scenarios into the correct high-level verdict. They do NOT represent individual request-level packet inspection metrics.",
+    "ttd_measurement_caveat": "Time-To-Detect (TTD) resolution is limited by the 4.0s background evaluation loop in backend/app/main.py and the 0.5s observer polling cadence. Observed TTD values are discrete measurements quantized to evaluation intervals (~4s, ~8s), not continuous line-rate detection latency.",
+    "safety_limits": {
+      "max_concurrency_workers": 25,
+      "max_target_rps": 65,
+      "max_scenario_duration_sec": 12
+    },
+    "limitations_and_residual_state": [
+      "Nginx access log telemetry uses a 10s sliding window; an 11s pause is enforced between scenarios.",
+      "EWMA baselines in entropy_engine evolve dynamically on normal traffic and are not hard-reset.",
+      "Docker Desktop on Windows NATs direct host connections to 172.28.0.1; simulation channel is required for synthetic source IPs."
+    ]
+  },
+  "scenario_results": [
+    {
+      "scenario_name": "1_normal_traffic",
+      "scenario_description": "Baseline legitimate web browsing across 7 endpoints with distributed client IPs",
+      "ground_truth_label": "NORMAL",
+      "observed_classification": "NORMAL",
+      "classification_matched": true,
+      "traffic_start": "2026-10-17T07:43:16.761934+00:00",
+      "traffic_end": "2026-10-17T07:43:29.047444+00:00",
+      "scheduler_stats": {
+        "configured_target_rps": 12.0,
+        "configured_duration_sec": 10.0,
+        "concurrency": 4,
+        "total_scheduling_slots": 120,
+        "submitted_requests": 114,
+        "completed_requests": 114,
+        "worker_errors": 0,
+        "worker_timeouts": 0,
+        "unfinished_requests": 0,
+        "cancelled_pending_requests": 0,
+        "running_at_shutdown_requests": 0,
+        "missed_scheduling_slots": 6,
+        "backpressure_wait_events": 38,
+        "max_lateness_sec": 0.5763,
+        "drain_timed_out": false,
+        "drain_timeout_sec": 3.0,
+        "executor_shutdown_waited": false,
+        "dispatch_deadline_respected": true,
+        "workload_fully_delivered": false,
+        "rate_limited_or_incomplete": true,
+        "timestamps": {
+          "overall_start_iso": "2026-10-17T07:43:16.761934+00:00",
+          "first_dispatch_sec": 0.0025,
+          "last_dispatch_sec": 9.9936,
+          "last_completion_sec": 12.2826,
+          "dispatch_duration_sec": 9.9911,
+          "total_completion_duration_sec": 12.2827
+        },
+        "dispatch_window_rps": 11.31,
+        "completed_request_throughput_rps": 9.28,
+        "target_rps": 12.0,
+        "scheduled_requests": 114,
+        "completion_throughput_rps": 9.28,
+        "within_configured_duration": true,
+        "is_rate_limited_or_incomplete": true,
+        "metric_definitions": {
+          "total_scheduling_slots": "Number of temporal dispatch slots configured for the run: int(duration * target_rps).",
+          "submitted_requests": "Number of tasks successfully submitted to the executor before the dispatch deadline.",
+          "completed_requests": "Number of tasks whose futures genuinely finished. Includes successful responses and HTTP error status codes (403, 429, 503, 504). HTTP 503 is a completed HTTP request from Nginx or backend, NOT a worker error.",
+          "worker_errors": "Tasks that terminated with an unhandled Python exception in the worker thread.",
+          "worker_timeouts": "Tasks that were still active or pending when the drain deadline expired.",
+          "unfinished_requests": "Tasks remaining unfinished (running or pending) after the drain timeout.",
+          "cancelled_pending_requests": "Unfinished tasks that were successfully cancelled before starting execution in the worker thread.",
+          "running_at_shutdown_requests": "Unfinished tasks that were already executing on worker threads (cancelling could not abort them).",
+          "missed_scheduling_slots": "Scheduling slots skipped because the monotonic clock reached the duration deadline or experienced excessive delay.",
+          "dispatch_window_rps": "Rate of task submission measured strictly within the active dispatch window: (submitted_requests - 1) / dispatch_duration_sec.",
+          "completed_request_throughput_rps": "Genuinely completed tasks per second over the total run duration: completed_requests / total_completion_duration_sec. Excludes timeouts, errors, and synthetic records.",
+          "dispatch_deadline_respected": "True if no task was submitted at or after immutable_start + duration.",
+          "workload_fully_delivered": "True if all scheduled slots were submitted, completed without errors or timeouts, and no backpressure occurred.",
+          "rate_limited_or_incomplete": "True if backpressure, missed slots, worker errors, timeouts, or incomplete submissions prevented full workload delivery.",
+          "runtime_bounding_note": "Cancelling a future prevents queued pending tasks from starting, but cannot abort a worker thread that is already actively running. The drain timeout bounds the scheduler's wait time, not necessarily total Python process lifetime if threads remain running."
+        }
+      },
+      "dispatch_duration_sec": 9.9911,
+      "total_completion_duration_sec": 12.2827,
+      "total_scheduling_slots": 120,
+      "submitted_requests": 114,
+      "completed_requests": 114,
+      "worker_errors": 0,
+      "worker_timeouts": 0,
+      "unfinished_requests": 0,
+      "missed_scheduling_slots": 6,
+      "dispatch_window_rps": 11.31,
+      "completed_request_throughput_rps": 9.28,
+      "dispatch_deadline_respected": true,
+      "workload_fully_delivered": false,
+      "rate_limited_or_incomplete": true,
+      "scheduled_requests": 114,
+      "completion_throughput_rps": 9.28,
+      "actual_duration_sec": 12.28,
+      "total_requests_sent": 114,
+      "achieved_rps": 9.3,
+      "http_status_distribution": {
+        "200": 114
+      },
+      "time_to_detect_sec": null,
+      "legitimate_probes": {
+        "probes_sent": 9,
+        "probes_successful": 9,
+        "availability_pct": 100.0,
+        "mean_latency_ms": 475.42,
+        "p50_latency_ms": 20.62,
+        "p95_latency_ms": 1564.53,
+        "p99_latency_ms": 1564.53
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "NONE",
+        "blocked_ips_count": 0,
+        "blocked_ips_list": [],
+        "blocked_scenario_ips": [],
+        "status_403_count": 0,
+        "status_429_count": 0,
+        "status_503_count": 0,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": false,
+        "legitimate_probes_available": true
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792222996.7619348,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.2,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792222997.2938592,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.2,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792222997.80729,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.2,
+          "url_entropy": 1.585,
+          "ip_entropy": 1.585,
+          "top_ip_concentration_pct": 33.3,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792222998.3976934,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.2,
+          "url_entropy": 1.585,
+          "ip_entropy": 1.585,
+          "top_ip_concentration_pct": 33.3,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792222998.9183497,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.2,
+          "url_entropy": 1.585,
+          "ip_entropy": 1.585,
+          "top_ip_concentration_pct": 33.3,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792222999.4485703,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.2,
+          "url_entropy": 1.585,
+          "ip_entropy": 1.585,
+          "top_ip_concentration_pct": 33.3,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792222999.97249,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.2,
+          "url_entropy": 1.585,
+          "ip_entropy": 1.585,
+          "top_ip_concentration_pct": 33.3,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223000.4903762,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.2,
+          "url_entropy": 2.534,
+          "ip_entropy": 4.32,
+          "top_ip_concentration_pct": 9.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223002.406576,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.2,
+          "url_entropy": 2.534,
+          "ip_entropy": 4.32,
+          "top_ip_concentration_pct": 9.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223002.9472733,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 10.6,
+          "baseline_rps": 0.2,
+          "url_entropy": 2.5,
+          "ip_entropy": 4.392,
+          "top_ip_concentration_pct": 8.3,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223003.921096,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 10.6,
+          "baseline_rps": 0.2,
+          "url_entropy": 2.5,
+          "ip_entropy": 4.392,
+          "top_ip_concentration_pct": 8.3,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223004.4462926,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.2,
+          "url_entropy": 2.534,
+          "ip_entropy": 4.32,
+          "top_ip_concentration_pct": 9.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223004.9643762,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 10.6,
+          "baseline_rps": 0.2,
+          "url_entropy": 2.5,
+          "ip_entropy": 4.392,
+          "top_ip_concentration_pct": 8.3,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223005.491994,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 10.6,
+          "baseline_rps": 0.2,
+          "url_entropy": 2.5,
+          "ip_entropy": 4.392,
+          "top_ip_concentration_pct": 8.3,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223006.0104854,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 10.6,
+          "baseline_rps": 0.2,
+          "url_entropy": 2.5,
+          "ip_entropy": 4.392,
+          "top_ip_concentration_pct": 8.3,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223006.5434625,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 12.6,
+          "baseline_rps": 0.2,
+          "url_entropy": 2.55,
+          "ip_entropy": 4.518,
+          "top_ip_concentration_pct": 8.2,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223008.0394442,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 12.6,
+          "baseline_rps": 0.2,
+          "url_entropy": 2.55,
+          "ip_entropy": 4.518,
+          "top_ip_concentration_pct": 8.2,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223008.5572195,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 12.6,
+          "baseline_rps": 1.8,
+          "url_entropy": 2.494,
+          "ip_entropy": 4.415,
+          "top_ip_concentration_pct": 9.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-17T07:43:16.761253+00:00",
+        "reset_verified": true,
+        "actions": [
+          "Tier reset to NONE confirmed directly on cloudshield-backend-1 (172.28.0.11:8000)",
+          "Tier reset to NONE confirmed directly on cloudshield-backend-2 (172.28.0.12:8000)"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.11:8000": {
+            "container": "cloudshield-backend-1",
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "blocked_ips": [],
+            "is_clean": true
+          },
+          "172.28.0.12:8000": {
+            "container": "cloudshield-backend-2",
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "blocked_ips": [],
+            "is_clean": true
+          }
+        },
+        "baseline_state": "NORMAL"
+      }
+    },
+    {
+      "scenario_name": "2_concentrated_flood",
+      "scenario_description": "High-volume HTTP flood targeting single endpoint /api/v1/sample/hello from 2 concentrated IPs",
+      "ground_truth_label": "ATTACK",
+      "observed_classification": "ATTACK",
+      "classification_matched": true,
+      "traffic_start": "2026-10-17T07:43:55.177690+00:00",
+      "traffic_end": "2026-10-17T07:44:06.146006+00:00",
+      "scheduler_stats": {
+        "configured_target_rps": 60.0,
+        "configured_duration_sec": 10.0,
+        "concurrency": 20,
+        "total_scheduling_slots": 600,
+        "submitted_requests": 597,
+        "completed_requests": 597,
+        "worker_errors": 0,
+        "worker_timeouts": 0,
+        "unfinished_requests": 0,
+        "cancelled_pending_requests": 0,
+        "running_at_shutdown_requests": 0,
+        "missed_scheduling_slots": 3,
+        "backpressure_wait_events": 5,
+        "max_lateness_sec": 0.0544,
+        "drain_timed_out": false,
+        "drain_timeout_sec": 3.0,
+        "executor_shutdown_waited": false,
+        "dispatch_deadline_respected": true,
+        "workload_fully_delivered": false,
+        "rate_limited_or_incomplete": true,
+        "timestamps": {
+          "overall_start_iso": "2026-10-17T07:43:55.177690+00:00",
+          "first_dispatch_sec": 0.0019,
+          "last_dispatch_sec": 9.9884,
+          "last_completion_sec": 10.9682,
+          "dispatch_duration_sec": 9.9866,
+          "total_completion_duration_sec": 10.9682
+        },
+        "dispatch_window_rps": 59.68,
+        "completed_request_throughput_rps": 54.43,
+        "target_rps": 60.0,
+        "scheduled_requests": 597,
+        "completion_throughput_rps": 54.43,
+        "within_configured_duration": true,
+        "is_rate_limited_or_incomplete": true,
+        "metric_definitions": {
+          "total_scheduling_slots": "Number of temporal dispatch slots configured for the run: int(duration * target_rps).",
+          "submitted_requests": "Number of tasks successfully submitted to the executor before the dispatch deadline.",
+          "completed_requests": "Number of tasks whose futures genuinely finished. Includes successful responses and HTTP error status codes (403, 429, 503, 504). HTTP 503 is a completed HTTP request from Nginx or backend, NOT a worker error.",
+          "worker_errors": "Tasks that terminated with an unhandled Python exception in the worker thread.",
+          "worker_timeouts": "Tasks that were still active or pending when the drain deadline expired.",
+          "unfinished_requests": "Tasks remaining unfinished (running or pending) after the drain timeout.",
+          "cancelled_pending_requests": "Unfinished tasks that were successfully cancelled before starting execution in the worker thread.",
+          "running_at_shutdown_requests": "Unfinished tasks that were already executing on worker threads (cancelling could not abort them).",
+          "missed_scheduling_slots": "Scheduling slots skipped because the monotonic clock reached the duration deadline or experienced excessive delay.",
+          "dispatch_window_rps": "Rate of task submission measured strictly within the active dispatch window: (submitted_requests - 1) / dispatch_duration_sec.",
+          "completed_request_throughput_rps": "Genuinely completed tasks per second over the total run duration: completed_requests / total_completion_duration_sec. Excludes timeouts, errors, and synthetic records.",
+          "dispatch_deadline_respected": "True if no task was submitted at or after immutable_start + duration.",
+          "workload_fully_delivered": "True if all scheduled slots were submitted, completed without errors or timeouts, and no backpressure occurred.",
+          "rate_limited_or_incomplete": "True if backpressure, missed slots, worker errors, timeouts, or incomplete submissions prevented full workload delivery.",
+          "runtime_bounding_note": "Cancelling a future prevents queued pending tasks from starting, but cannot abort a worker thread that is already actively running. The drain timeout bounds the scheduler's wait time, not necessarily total Python process lifetime if threads remain running."
+        }
+      },
+      "dispatch_duration_sec": 9.9866,
+      "total_completion_duration_sec": 10.9682,
+      "total_scheduling_slots": 600,
+      "submitted_requests": 597,
+      "completed_requests": 597,
+      "worker_errors": 0,
+      "worker_timeouts": 0,
+      "unfinished_requests": 0,
+      "missed_scheduling_slots": 3,
+      "dispatch_window_rps": 59.68,
+      "completed_request_throughput_rps": 54.43,
+      "dispatch_deadline_respected": true,
+      "workload_fully_delivered": false,
+      "rate_limited_or_incomplete": true,
+      "scheduled_requests": 597,
+      "completion_throughput_rps": 54.43,
+      "actual_duration_sec": 10.97,
+      "total_requests_sent": 597,
+      "achieved_rps": 54.4,
+      "http_status_distribution": {
+        "200": 424,
+        "503": 173
+      },
+      "time_to_detect_sec": 4.13,
+      "legitimate_probes": {
+        "probes_sent": 8,
+        "probes_successful": 4,
+        "availability_pct": 50.0,
+        "mean_latency_ms": 306.84,
+        "p50_latency_ms": 20.29,
+        "p95_latency_ms": 1473.93,
+        "p99_latency_ms": 1473.93
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "TIER_1",
+        "blocked_ips_count": 0,
+        "blocked_ips_list": [],
+        "blocked_scenario_ips": [],
+        "status_403_count": 0,
+        "status_429_count": 0,
+        "status_503_count": 173,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": false,
+        "legitimate_probes_available": false
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792223035.1766121,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.7,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223035.7014406,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 2.2,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.993,
+          "top_ip_concentration_pct": 55.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223036.7211633,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.7,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223037.7545452,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.7,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223038.274097,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.7,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223039.3029969,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.8,
+          "baseline_rps": 1.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.089,
+          "top_ip_concentration_pct": 55.5,
+          "verdict_reason": "Elevated 5xx error rate: 22.76%."
+        },
+        {
+          "poll_time": 1792223041.1009924,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.8,
+          "baseline_rps": 1.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.089,
+          "top_ip_concentration_pct": 55.5,
+          "verdict_reason": "Elevated 5xx error rate: 22.76%."
+        },
+        {
+          "poll_time": 1792223041.612418,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.8,
+          "baseline_rps": 1.9,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.077,
+          "top_ip_concentration_pct": 56.1,
+          "verdict_reason": "Elevated 5xx error rate: 20.41%."
+        },
+        {
+          "poll_time": 1792223042.1589916,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.8,
+          "baseline_rps": 1.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.089,
+          "top_ip_concentration_pct": 55.5,
+          "verdict_reason": "Elevated 5xx error rate: 22.76%."
+        },
+        {
+          "poll_time": 1792223043.2059171,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.8,
+          "baseline_rps": 1.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.089,
+          "top_ip_concentration_pct": 55.5,
+          "verdict_reason": "Elevated 5xx error rate: 22.76%."
+        },
+        {
+          "poll_time": 1792223043.7280245,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.8,
+          "baseline_rps": 1.9,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.077,
+          "top_ip_concentration_pct": 56.1,
+          "verdict_reason": "Elevated 5xx error rate: 20.41%."
+        },
+        {
+          "poll_time": 1792223044.7607293,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 56.2,
+          "baseline_rps": 1.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.093,
+          "top_ip_concentration_pct": 51.2,
+          "verdict_reason": "Traffic flood: 56.2 req/s (baseline 1.5 req/s). Low URL entropy (0.00, z=1.71) and high top-IP concentration (51.2%)."
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-17T07:43:55.174603+00:00",
+        "reset_verified": true,
+        "actions": [
+          "Tier reset to NONE confirmed directly on cloudshield-backend-1 (172.28.0.11:8000)",
+          "Tier reset to NONE confirmed directly on cloudshield-backend-2 (172.28.0.12:8000)"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.11:8000": {
+            "container": "cloudshield-backend-1",
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "blocked_ips": [],
+            "is_clean": true
+          },
+          "172.28.0.12:8000": {
+            "container": "cloudshield-backend-2",
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "blocked_ips": [],
+            "is_clean": true
+          }
+        },
+        "baseline_state": "NORMAL"
+      }
+    },
+    {
+      "scenario_name": "3_distributed_flood",
+      "scenario_description": "High-volume HTTP flood targeting single endpoint /api/v1/sample/hello from 50 distributed botnet IPs",
+      "ground_truth_label": "ATTACK",
+      "observed_classification": "SUSPICIOUS",
+      "classification_matched": false,
+      "traffic_start": "2026-10-17T07:44:32.884902+00:00",
+      "traffic_end": "2026-10-17T07:44:43.007062+00:00",
+      "scheduler_stats": {
+        "configured_target_rps": 60.0,
+        "configured_duration_sec": 10.0,
+        "concurrency": 20,
+        "total_scheduling_slots": 600,
+        "submitted_requests": 600,
+        "completed_requests": 600,
+        "worker_errors": 0,
+        "worker_timeouts": 0,
+        "unfinished_requests": 0,
+        "cancelled_pending_requests": 0,
+        "running_at_shutdown_requests": 0,
+        "missed_scheduling_slots": 0,
+        "backpressure_wait_events": 0,
+        "max_lateness_sec": 0.003,
+        "drain_timed_out": false,
+        "drain_timeout_sec": 3.0,
+        "executor_shutdown_waited": false,
+        "dispatch_deadline_respected": true,
+        "workload_fully_delivered": true,
+        "rate_limited_or_incomplete": false,
+        "timestamps": {
+          "overall_start_iso": "2026-10-17T07:44:32.884902+00:00",
+          "first_dispatch_sec": 0.0021,
+          "last_dispatch_sec": 9.9838,
+          "last_completion_sec": 10.1208,
+          "dispatch_duration_sec": 9.9817,
+          "total_completion_duration_sec": 10.1208
+        },
+        "dispatch_window_rps": 60.01,
+        "completed_request_throughput_rps": 59.28,
+        "target_rps": 60.0,
+        "scheduled_requests": 600,
+        "completion_throughput_rps": 59.28,
+        "within_configured_duration": true,
+        "is_rate_limited_or_incomplete": false,
+        "metric_definitions": {
+          "total_scheduling_slots": "Number of temporal dispatch slots configured for the run: int(duration * target_rps).",
+          "submitted_requests": "Number of tasks successfully submitted to the executor before the dispatch deadline.",
+          "completed_requests": "Number of tasks whose futures genuinely finished. Includes successful responses and HTTP error status codes (403, 429, 503, 504). HTTP 503 is a completed HTTP request from Nginx or backend, NOT a worker error.",
+          "worker_errors": "Tasks that terminated with an unhandled Python exception in the worker thread.",
+          "worker_timeouts": "Tasks that were still active or pending when the drain deadline expired.",
+          "unfinished_requests": "Tasks remaining unfinished (running or pending) after the drain timeout.",
+          "cancelled_pending_requests": "Unfinished tasks that were successfully cancelled before starting execution in the worker thread.",
+          "running_at_shutdown_requests": "Unfinished tasks that were already executing on worker threads (cancelling could not abort them).",
+          "missed_scheduling_slots": "Scheduling slots skipped because the monotonic clock reached the duration deadline or experienced excessive delay.",
+          "dispatch_window_rps": "Rate of task submission measured strictly within the active dispatch window: (submitted_requests - 1) / dispatch_duration_sec.",
+          "completed_request_throughput_rps": "Genuinely completed tasks per second over the total run duration: completed_requests / total_completion_duration_sec. Excludes timeouts, errors, and synthetic records.",
+          "dispatch_deadline_respected": "True if no task was submitted at or after immutable_start + duration.",
+          "workload_fully_delivered": "True if all scheduled slots were submitted, completed without errors or timeouts, and no backpressure occurred.",
+          "rate_limited_or_incomplete": "True if backpressure, missed slots, worker errors, timeouts, or incomplete submissions prevented full workload delivery.",
+          "runtime_bounding_note": "Cancelling a future prevents queued pending tasks from starting, but cannot abort a worker thread that is already actively running. The drain timeout bounds the scheduler's wait time, not necessarily total Python process lifetime if threads remain running."
+        }
+      },
+      "dispatch_duration_sec": 9.9817,
+      "total_completion_duration_sec": 10.1208,
+      "total_scheduling_slots": 600,
+      "submitted_requests": 600,
+      "completed_requests": 600,
+      "worker_errors": 0,
+      "worker_timeouts": 0,
+      "unfinished_requests": 0,
+      "missed_scheduling_slots": 0,
+      "dispatch_window_rps": 60.01,
+      "completed_request_throughput_rps": 59.28,
+      "dispatch_deadline_respected": true,
+      "workload_fully_delivered": true,
+      "rate_limited_or_incomplete": false,
+      "scheduled_requests": 600,
+      "completion_throughput_rps": 59.28,
+      "actual_duration_sec": 10.12,
+      "total_requests_sent": 600,
+      "achieved_rps": 59.3,
+      "http_status_distribution": {
+        "200": 430,
+        "503": 170
+      },
+      "time_to_detect_sec": 5.24,
+      "legitimate_probes": {
+        "probes_sent": 9,
+        "probes_successful": 2,
+        "availability_pct": 22.22,
+        "mean_latency_ms": 135.96,
+        "p50_latency_ms": 11.27,
+        "p95_latency_ms": 1131.67,
+        "p99_latency_ms": 1131.67
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "TIER_1",
+        "blocked_ips_count": 0,
+        "blocked_ips_list": [],
+        "blocked_scenario_ips": [],
+        "status_403_count": 0,
+        "status_429_count": 0,
+        "status_503_count": 170,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": false,
+        "legitimate_probes_available": false
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792223072.884902,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.1,
+          "url_entropy": 0.0,
+          "ip_entropy": 4.107,
+          "top_ip_concentration_pct": 9.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223074.5053842,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.1,
+          "url_entropy": 0.0,
+          "ip_entropy": 4.107,
+          "top_ip_concentration_pct": 9.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223075.0329437,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.9,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223077.1008253,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.1,
+          "url_entropy": 0.0,
+          "ip_entropy": 4.107,
+          "top_ip_concentration_pct": 9.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223078.1274087,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 29.0,
+          "baseline_rps": 0.8,
+          "url_entropy": 0.0,
+          "ip_entropy": 5.519,
+          "top_ip_concentration_pct": 4.1,
+          "verdict_reason": "Moderate RPS elevation: 29.0 req/s vs baseline 0.8 req/s.; Elevated 5xx error rate: 21.21%."
+        },
+        {
+          "poll_time": 1792223079.1671576,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 29.0,
+          "baseline_rps": 1.0,
+          "url_entropy": 0.0,
+          "ip_entropy": 5.536,
+          "top_ip_concentration_pct": 4.5,
+          "verdict_reason": "Moderate RPS elevation: 29.0 req/s vs baseline 1.0 req/s.; Elevated 5xx error rate: 26.45%."
+        },
+        {
+          "poll_time": 1792223080.3248074,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 29.0,
+          "baseline_rps": 0.8,
+          "url_entropy": 0.0,
+          "ip_entropy": 5.519,
+          "top_ip_concentration_pct": 4.1,
+          "verdict_reason": "Moderate RPS elevation: 29.0 req/s vs baseline 0.8 req/s.; Elevated 5xx error rate: 21.21%."
+        },
+        {
+          "poll_time": 1792223080.8387673,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 29.0,
+          "baseline_rps": 0.8,
+          "url_entropy": 0.0,
+          "ip_entropy": 5.519,
+          "top_ip_concentration_pct": 4.1,
+          "verdict_reason": "Moderate RPS elevation: 29.0 req/s vs baseline 0.8 req/s.; Elevated 5xx error rate: 21.21%."
+        },
+        {
+          "poll_time": 1792223081.3588471,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 29.0,
+          "baseline_rps": 0.8,
+          "url_entropy": 0.0,
+          "ip_entropy": 5.519,
+          "top_ip_concentration_pct": 4.1,
+          "verdict_reason": "Moderate RPS elevation: 29.0 req/s vs baseline 0.8 req/s.; Elevated 5xx error rate: 21.21%."
+        },
+        {
+          "poll_time": 1792223082.929749,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 29.0,
+          "baseline_rps": 1.0,
+          "url_entropy": 0.0,
+          "ip_entropy": 5.536,
+          "top_ip_concentration_pct": 4.5,
+          "verdict_reason": "Moderate RPS elevation: 29.0 req/s vs baseline 1.0 req/s.; Elevated 5xx error rate: 26.45%."
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-17T07:44:32.883066+00:00",
+        "reset_verified": true,
+        "actions": [
+          "Tier reset to NONE confirmed directly on cloudshield-backend-1 (172.28.0.11:8000)",
+          "Tier reset to NONE confirmed directly on cloudshield-backend-2 (172.28.0.12:8000)"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.11:8000": {
+            "container": "cloudshield-backend-1",
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "blocked_ips": [],
+            "is_clean": true
+          },
+          "172.28.0.12:8000": {
+            "container": "cloudshield-backend-2",
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "blocked_ips": [],
+            "is_clean": true
+          }
+        },
+        "baseline_state": "NORMAL"
+      }
+    },
+    {
+      "scenario_name": "4_low_rate_flood",
+      "scenario_description": "Low-rate HTTP flood (4-6 RPS) staying below volumetric surge thresholds on legitimate endpoints",
+      "ground_truth_label": "ATTACK",
+      "observed_classification": "NORMAL",
+      "classification_matched": false,
+      "traffic_start": "2026-10-17T07:45:08.599961+00:00",
+      "traffic_end": "2026-10-17T07:45:18.951677+00:00",
+      "scheduler_stats": {
+        "configured_target_rps": 5.0,
+        "configured_duration_sec": 10.0,
+        "concurrency": 2,
+        "total_scheduling_slots": 50,
+        "submitted_requests": 50,
+        "completed_requests": 50,
+        "worker_errors": 0,
+        "worker_timeouts": 0,
+        "unfinished_requests": 0,
+        "cancelled_pending_requests": 0,
+        "running_at_shutdown_requests": 0,
+        "missed_scheduling_slots": 0,
+        "backpressure_wait_events": 0,
+        "max_lateness_sec": 0.0051,
+        "drain_timed_out": false,
+        "drain_timeout_sec": 3.0,
+        "executor_shutdown_waited": false,
+        "dispatch_deadline_respected": true,
+        "workload_fully_delivered": true,
+        "rate_limited_or_incomplete": false,
+        "timestamps": {
+          "overall_start_iso": "2026-10-17T07:45:08.599961+00:00",
+          "first_dispatch_sec": 0.0023,
+          "last_dispatch_sec": 9.8008,
+          "last_completion_sec": 10.3518,
+          "dispatch_duration_sec": 9.7984,
+          "total_completion_duration_sec": 10.3519
+        },
+        "dispatch_window_rps": 5.0,
+        "completed_request_throughput_rps": 4.83,
+        "target_rps": 5.0,
+        "scheduled_requests": 50,
+        "completion_throughput_rps": 4.83,
+        "within_configured_duration": true,
+        "is_rate_limited_or_incomplete": false,
+        "metric_definitions": {
+          "total_scheduling_slots": "Number of temporal dispatch slots configured for the run: int(duration * target_rps).",
+          "submitted_requests": "Number of tasks successfully submitted to the executor before the dispatch deadline.",
+          "completed_requests": "Number of tasks whose futures genuinely finished. Includes successful responses and HTTP error status codes (403, 429, 503, 504). HTTP 503 is a completed HTTP request from Nginx or backend, NOT a worker error.",
+          "worker_errors": "Tasks that terminated with an unhandled Python exception in the worker thread.",
+          "worker_timeouts": "Tasks that were still active or pending when the drain deadline expired.",
+          "unfinished_requests": "Tasks remaining unfinished (running or pending) after the drain timeout.",
+          "cancelled_pending_requests": "Unfinished tasks that were successfully cancelled before starting execution in the worker thread.",
+          "running_at_shutdown_requests": "Unfinished tasks that were already executing on worker threads (cancelling could not abort them).",
+          "missed_scheduling_slots": "Scheduling slots skipped because the monotonic clock reached the duration deadline or experienced excessive delay.",
+          "dispatch_window_rps": "Rate of task submission measured strictly within the active dispatch window: (submitted_requests - 1) / dispatch_duration_sec.",
+          "completed_request_throughput_rps": "Genuinely completed tasks per second over the total run duration: completed_requests / total_completion_duration_sec. Excludes timeouts, errors, and synthetic records.",
+          "dispatch_deadline_respected": "True if no task was submitted at or after immutable_start + duration.",
+          "workload_fully_delivered": "True if all scheduled slots were submitted, completed without errors or timeouts, and no backpressure occurred.",
+          "rate_limited_or_incomplete": "True if backpressure, missed slots, worker errors, timeouts, or incomplete submissions prevented full workload delivery.",
+          "runtime_bounding_note": "Cancelling a future prevents queued pending tasks from starting, but cannot abort a worker thread that is already actively running. The drain timeout bounds the scheduler's wait time, not necessarily total Python process lifetime if threads remain running."
+        }
+      },
+      "dispatch_duration_sec": 9.7984,
+      "total_completion_duration_sec": 10.3519,
+      "total_scheduling_slots": 50,
+      "submitted_requests": 50,
+      "completed_requests": 50,
+      "worker_errors": 0,
+      "worker_timeouts": 0,
+      "unfinished_requests": 0,
+      "missed_scheduling_slots": 0,
+      "dispatch_window_rps": 5.0,
+      "completed_request_throughput_rps": 4.83,
+      "dispatch_deadline_respected": true,
+      "workload_fully_delivered": true,
+      "rate_limited_or_incomplete": false,
+      "scheduled_requests": 50,
+      "completion_throughput_rps": 4.83,
+      "actual_duration_sec": 10.35,
+      "total_requests_sent": 50,
+      "achieved_rps": 4.8,
+      "http_status_distribution": {
+        "200": 50
+      },
+      "time_to_detect_sec": null,
+      "legitimate_probes": {
+        "probes_sent": 9,
+        "probes_successful": 9,
+        "availability_pct": 100.0,
+        "mean_latency_ms": 176.06,
+        "p50_latency_ms": 27.13,
+        "p95_latency_ms": 708.59,
+        "p99_latency_ms": 708.59
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "NONE",
+        "blocked_ips_count": 0,
+        "blocked_ips_list": [],
+        "blocked_scenario_ips": [],
+        "status_403_count": 0,
+        "status_429_count": 0,
+        "status_503_count": 0,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": false,
+        "legitimate_probes_available": true
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792223108.5991516,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.6,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223109.1392424,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.6,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.842,
+          "top_ip_concentration_pct": 42.9,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223110.4658952,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.6,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223110.981156,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.6,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223111.5025365,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.6,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223112.0230682,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.6,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.842,
+          "top_ip_concentration_pct": 42.9,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223112.5428848,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.6,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223113.077575,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.6,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.842,
+          "top_ip_concentration_pct": 42.9,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223113.5940728,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.6,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.842,
+          "top_ip_concentration_pct": 42.9,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223114.120371,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 2.6,
+          "baseline_rps": 0.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.943,
+          "top_ip_concentration_pct": 34.6,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223114.6367545,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 2.6,
+          "baseline_rps": 0.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.943,
+          "top_ip_concentration_pct": 34.6,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223115.1503859,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 2.6,
+          "baseline_rps": 0.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.943,
+          "top_ip_concentration_pct": 34.6,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223115.6694965,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 2.6,
+          "baseline_rps": 0.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.943,
+          "top_ip_concentration_pct": 34.6,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223116.1888077,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 2.6,
+          "baseline_rps": 0.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.943,
+          "top_ip_concentration_pct": 34.6,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223116.7080386,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 2.6,
+          "baseline_rps": 0.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.943,
+          "top_ip_concentration_pct": 34.6,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223117.2271862,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 2.6,
+          "baseline_rps": 0.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.914,
+          "top_ip_concentration_pct": 38.2,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223117.7459753,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 2.6,
+          "baseline_rps": 0.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.943,
+          "top_ip_concentration_pct": 34.6,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223118.2789314,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 2.6,
+          "baseline_rps": 0.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.914,
+          "top_ip_concentration_pct": 38.2,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223118.7951636,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 8.0,
+          "baseline_rps": 0.8,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.943,
+          "top_ip_concentration_pct": 35.7,
+          "verdict_reason": "All metrics within baseline thresholds."
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-17T07:45:08.597697+00:00",
+        "reset_verified": true,
+        "actions": [
+          "Tier reset to NONE confirmed directly on cloudshield-backend-1 (172.28.0.11:8000)",
+          "Tier reset to NONE confirmed directly on cloudshield-backend-2 (172.28.0.12:8000)"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.11:8000": {
+            "container": "cloudshield-backend-1",
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "blocked_ips": [],
+            "is_clean": true
+          },
+          "172.28.0.12:8000": {
+            "container": "cloudshield-backend-2",
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "blocked_ips": [],
+            "is_clean": true
+          }
+        },
+        "baseline_state": "NORMAL"
+      }
+    },
+    {
+      "scenario_name": "5_honeypot_tripwire",
+      "scenario_description": "Adversary scanner accessing decoy endpoint /admin-backup/ triggering deterministic tripwire",
+      "ground_truth_label": "ATTACK",
+      "observed_classification": "ATTACK",
+      "classification_matched": true,
+      "traffic_start": "2026-10-17T07:45:43.059723+00:00",
+      "traffic_end": "2026-10-17T07:45:49.219445+00:00",
+      "scheduler_stats": {
+        "configured_target_rps": 4.0,
+        "configured_duration_sec": 6.0,
+        "concurrency": 2,
+        "total_scheduling_slots": 24,
+        "submitted_requests": 24,
+        "completed_requests": 24,
+        "worker_errors": 0,
+        "worker_timeouts": 0,
+        "unfinished_requests": 0,
+        "cancelled_pending_requests": 0,
+        "running_at_shutdown_requests": 0,
+        "missed_scheduling_slots": 0,
+        "backpressure_wait_events": 0,
+        "max_lateness_sec": 0.001,
+        "drain_timed_out": false,
+        "drain_timeout_sec": 3.0,
+        "executor_shutdown_waited": false,
+        "dispatch_deadline_respected": true,
+        "workload_fully_delivered": true,
+        "rate_limited_or_incomplete": false,
+        "timestamps": {
+          "overall_start_iso": "2026-10-17T07:45:43.059723+00:00",
+          "first_dispatch_sec": 0.0013,
+          "last_dispatch_sec": 5.7503,
+          "last_completion_sec": 6.16,
+          "dispatch_duration_sec": 5.7491,
+          "total_completion_duration_sec": 6.16
+        },
+        "dispatch_window_rps": 4.0,
+        "completed_request_throughput_rps": 3.9,
+        "target_rps": 4.0,
+        "scheduled_requests": 24,
+        "completion_throughput_rps": 3.9,
+        "within_configured_duration": true,
+        "is_rate_limited_or_incomplete": false,
+        "metric_definitions": {
+          "total_scheduling_slots": "Number of temporal dispatch slots configured for the run: int(duration * target_rps).",
+          "submitted_requests": "Number of tasks successfully submitted to the executor before the dispatch deadline.",
+          "completed_requests": "Number of tasks whose futures genuinely finished. Includes successful responses and HTTP error status codes (403, 429, 503, 504). HTTP 503 is a completed HTTP request from Nginx or backend, NOT a worker error.",
+          "worker_errors": "Tasks that terminated with an unhandled Python exception in the worker thread.",
+          "worker_timeouts": "Tasks that were still active or pending when the drain deadline expired.",
+          "unfinished_requests": "Tasks remaining unfinished (running or pending) after the drain timeout.",
+          "cancelled_pending_requests": "Unfinished tasks that were successfully cancelled before starting execution in the worker thread.",
+          "running_at_shutdown_requests": "Unfinished tasks that were already executing on worker threads (cancelling could not abort them).",
+          "missed_scheduling_slots": "Scheduling slots skipped because the monotonic clock reached the duration deadline or experienced excessive delay.",
+          "dispatch_window_rps": "Rate of task submission measured strictly within the active dispatch window: (submitted_requests - 1) / dispatch_duration_sec.",
+          "completed_request_throughput_rps": "Genuinely completed tasks per second over the total run duration: completed_requests / total_completion_duration_sec. Excludes timeouts, errors, and synthetic records.",
+          "dispatch_deadline_respected": "True if no task was submitted at or after immutable_start + duration.",
+          "workload_fully_delivered": "True if all scheduled slots were submitted, completed without errors or timeouts, and no backpressure occurred.",
+          "rate_limited_or_incomplete": "True if backpressure, missed slots, worker errors, timeouts, or incomplete submissions prevented full workload delivery.",
+          "runtime_bounding_note": "Cancelling a future prevents queued pending tasks from starting, but cannot abort a worker thread that is already actively running. The drain timeout bounds the scheduler's wait time, not necessarily total Python process lifetime if threads remain running."
+        }
+      },
+      "dispatch_duration_sec": 5.7491,
+      "total_completion_duration_sec": 6.16,
+      "total_scheduling_slots": 24,
+      "submitted_requests": 24,
+      "completed_requests": 24,
+      "worker_errors": 0,
+      "worker_timeouts": 0,
+      "unfinished_requests": 0,
+      "missed_scheduling_slots": 0,
+      "dispatch_window_rps": 4.0,
+      "completed_request_throughput_rps": 3.9,
+      "dispatch_deadline_respected": true,
+      "workload_fully_delivered": true,
+      "rate_limited_or_incomplete": false,
+      "scheduled_requests": 24,
+      "completion_throughput_rps": 3.9,
+      "actual_duration_sec": 6.16,
+      "total_requests_sent": 24,
+      "achieved_rps": 3.9,
+      "http_status_distribution": {
+        "403": 24
+      },
+      "time_to_detect_sec": 1.56,
+      "legitimate_probes": {
+        "probes_sent": 7,
+        "probes_successful": 7,
+        "availability_pct": 100.0,
+        "mean_latency_ms": 19.44,
+        "p50_latency_ms": 19.38,
+        "p95_latency_ms": 28.86,
+        "p99_latency_ms": 28.86
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "TIER_2",
+        "blocked_ips_count": 1,
+        "blocked_ips_list": [
+          "203.0.113.199"
+        ],
+        "blocked_scenario_ips": [
+          "203.0.113.199"
+        ],
+        "status_403_count": 24,
+        "status_429_count": 0,
+        "status_503_count": 0,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": true,
+        "legitimate_probes_available": true
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792223143.059044,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.9,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223143.585227,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.9,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223144.0973504,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.6,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 100.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223144.6151614,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.7,
+          "url_entropy": 0.845,
+          "ip_entropy": 0.845,
+          "top_ip_concentration_pct": 72.7,
+          "verdict_reason": "Honeypot decoy accessed by IP(s): 203.0.113.199"
+        },
+        {
+          "poll_time": 1792223146.438282,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.7,
+          "url_entropy": 0.845,
+          "ip_entropy": 0.845,
+          "top_ip_concentration_pct": 72.7,
+          "verdict_reason": "Honeypot decoy accessed by IP(s): 203.0.113.199"
+        },
+        {
+          "poll_time": 1792223146.957862,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.6,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 100.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223147.4751787,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.6,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 100.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223147.994037,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.7,
+          "url_entropy": 0.845,
+          "ip_entropy": 0.845,
+          "top_ip_concentration_pct": 72.7,
+          "verdict_reason": "Honeypot decoy accessed by IP(s): 203.0.113.199"
+        },
+        {
+          "poll_time": 1792223148.5115001,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.7,
+          "url_entropy": 0.845,
+          "ip_entropy": 0.845,
+          "top_ip_concentration_pct": 72.7,
+          "verdict_reason": "Honeypot decoy accessed by IP(s): 203.0.113.199"
+        },
+        {
+          "poll_time": 1792223149.0418658,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 3.4,
+          "baseline_rps": 1.4,
+          "url_entropy": 0.779,
+          "ip_entropy": 0.779,
+          "top_ip_concentration_pct": 76.9,
+          "verdict_reason": "Honeypot decoy accessed by IP(s): 203.0.113.199"
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-17T07:45:43.054119+00:00",
+        "reset_verified": true,
+        "actions": [
+          "Tier reset to NONE confirmed directly on cloudshield-backend-1 (172.28.0.11:8000)",
+          "Tier reset to NONE confirmed directly on cloudshield-backend-2 (172.28.0.12:8000)"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.11:8000": {
+            "container": "cloudshield-backend-1",
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "blocked_ips": [],
+            "is_clean": true
+          },
+          "172.28.0.12:8000": {
+            "container": "cloudshield-backend-2",
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "blocked_ips": [],
+            "is_clean": true
+          }
+        },
+        "baseline_state": "NORMAL"
+      }
+    },
+    {
+      "scenario_name": "6_flash_crowd",
+      "scenario_description": "Viral legitimate traffic surge across 10 diverse endpoints from 100 widely distributed IPs",
+      "ground_truth_label": "FLASH_CROWD",
+      "observed_classification": "ATTACK",
+      "classification_matched": false,
+      "traffic_start": "2026-10-17T07:46:17.410610+00:00",
+      "traffic_end": "2026-10-17T07:46:28.777533+00:00",
+      "scheduler_stats": {
+        "configured_target_rps": 55.0,
+        "configured_duration_sec": 10.0,
+        "concurrency": 18,
+        "total_scheduling_slots": 550,
+        "submitted_requests": 505,
+        "completed_requests": 505,
+        "worker_errors": 0,
+        "worker_timeouts": 0,
+        "unfinished_requests": 0,
+        "cancelled_pending_requests": 0,
+        "running_at_shutdown_requests": 0,
+        "missed_scheduling_slots": 45,
+        "backpressure_wait_events": 52,
+        "max_lateness_sec": 0.7426,
+        "drain_timed_out": false,
+        "drain_timeout_sec": 3.0,
+        "executor_shutdown_waited": false,
+        "dispatch_deadline_respected": true,
+        "workload_fully_delivered": false,
+        "rate_limited_or_incomplete": true,
+        "timestamps": {
+          "overall_start_iso": "2026-10-17T07:46:17.410610+00:00",
+          "first_dispatch_sec": 0.005,
+          "last_dispatch_sec": 9.9842,
+          "last_completion_sec": 11.3676,
+          "dispatch_duration_sec": 9.9792,
+          "total_completion_duration_sec": 11.3677
+        },
+        "dispatch_window_rps": 50.51,
+        "completed_request_throughput_rps": 44.42,
+        "target_rps": 55.0,
+        "scheduled_requests": 505,
+        "completion_throughput_rps": 44.42,
+        "within_configured_duration": true,
+        "is_rate_limited_or_incomplete": true,
+        "metric_definitions": {
+          "total_scheduling_slots": "Number of temporal dispatch slots configured for the run: int(duration * target_rps).",
+          "submitted_requests": "Number of tasks successfully submitted to the executor before the dispatch deadline.",
+          "completed_requests": "Number of tasks whose futures genuinely finished. Includes successful responses and HTTP error status codes (403, 429, 503, 504). HTTP 503 is a completed HTTP request from Nginx or backend, NOT a worker error.",
+          "worker_errors": "Tasks that terminated with an unhandled Python exception in the worker thread.",
+          "worker_timeouts": "Tasks that were still active or pending when the drain deadline expired.",
+          "unfinished_requests": "Tasks remaining unfinished (running or pending) after the drain timeout.",
+          "cancelled_pending_requests": "Unfinished tasks that were successfully cancelled before starting execution in the worker thread.",
+          "running_at_shutdown_requests": "Unfinished tasks that were already executing on worker threads (cancelling could not abort them).",
+          "missed_scheduling_slots": "Scheduling slots skipped because the monotonic clock reached the duration deadline or experienced excessive delay.",
+          "dispatch_window_rps": "Rate of task submission measured strictly within the active dispatch window: (submitted_requests - 1) / dispatch_duration_sec.",
+          "completed_request_throughput_rps": "Genuinely completed tasks per second over the total run duration: completed_requests / total_completion_duration_sec. Excludes timeouts, errors, and synthetic records.",
+          "dispatch_deadline_respected": "True if no task was submitted at or after immutable_start + duration.",
+          "workload_fully_delivered": "True if all scheduled slots were submitted, completed without errors or timeouts, and no backpressure occurred.",
+          "rate_limited_or_incomplete": "True if backpressure, missed slots, worker errors, timeouts, or incomplete submissions prevented full workload delivery.",
+          "runtime_bounding_note": "Cancelling a future prevents queued pending tasks from starting, but cannot abort a worker thread that is already actively running. The drain timeout bounds the scheduler's wait time, not necessarily total Python process lifetime if threads remain running."
+        }
+      },
+      "dispatch_duration_sec": 9.9792,
+      "total_completion_duration_sec": 11.3677,
+      "total_scheduling_slots": 550,
+      "submitted_requests": 505,
+      "completed_requests": 505,
+      "worker_errors": 0,
+      "worker_timeouts": 0,
+      "unfinished_requests": 0,
+      "missed_scheduling_slots": 45,
+      "dispatch_window_rps": 50.51,
+      "completed_request_throughput_rps": 44.42,
+      "dispatch_deadline_respected": true,
+      "workload_fully_delivered": false,
+      "rate_limited_or_incomplete": true,
+      "scheduled_requests": 505,
+      "completion_throughput_rps": 44.42,
+      "actual_duration_sec": 11.37,
+      "total_requests_sent": 505,
+      "achieved_rps": 44.4,
+      "http_status_distribution": {
+        "200": 399,
+        "503": 106
+      },
+      "time_to_detect_sec": 4.89,
+      "legitimate_probes": {
+        "probes_sent": 10,
+        "probes_successful": 6,
+        "availability_pct": 60.0,
+        "mean_latency_ms": 168.69,
+        "p50_latency_ms": 17.59,
+        "p95_latency_ms": 813.88,
+        "p99_latency_ms": 813.88
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "TIER_1",
+        "blocked_ips_count": 1,
+        "blocked_ips_list": [
+          "203.0.113.199"
+        ],
+        "blocked_scenario_ips": [],
+        "status_403_count": 0,
+        "status_429_count": 0,
+        "status_503_count": 106,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": false,
+        "legitimate_probes_available": false
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792223177.4106102,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.0,
+          "url_entropy": 2.61,
+          "ip_entropy": 4.037,
+          "top_ip_concentration_pct": 10.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223178.7018657,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.9,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223179.213533,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.9,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223181.2643209,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.0,
+          "url_entropy": 2.61,
+          "ip_entropy": 4.037,
+          "top_ip_concentration_pct": 10.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223181.7785368,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.0,
+          "url_entropy": 2.61,
+          "ip_entropy": 4.037,
+          "top_ip_concentration_pct": 10.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223182.2997708,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 31.8,
+          "baseline_rps": 0.8,
+          "url_entropy": 3.147,
+          "ip_entropy": 6.351,
+          "top_ip_concentration_pct": 3.4,
+          "verdict_reason": "Traffic flood: 31.8 req/s (baseline 0.8 req/s). Low URL entropy (3.15, z=6.85) and high top-IP concentration (3.4%)."
+        },
+        {
+          "poll_time": 1792223184.7571807,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 31.8,
+          "baseline_rps": 0.8,
+          "url_entropy": 3.149,
+          "ip_entropy": 6.288,
+          "top_ip_concentration_pct": 4.0,
+          "verdict_reason": "Traffic flood: 31.8 req/s (baseline 0.8 req/s). Low URL entropy (3.15, z=7.83) and high top-IP concentration (4.0%)."
+        },
+        {
+          "poll_time": 1792223185.7935548,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 31.8,
+          "baseline_rps": 0.8,
+          "url_entropy": 3.147,
+          "ip_entropy": 6.351,
+          "top_ip_concentration_pct": 3.4,
+          "verdict_reason": "Traffic flood: 31.8 req/s (baseline 0.8 req/s). Low URL entropy (3.15, z=6.85) and high top-IP concentration (3.4%)."
+        },
+        {
+          "poll_time": 1792223186.3158092,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 31.8,
+          "baseline_rps": 0.8,
+          "url_entropy": 3.149,
+          "ip_entropy": 6.288,
+          "top_ip_concentration_pct": 4.0,
+          "verdict_reason": "Traffic flood: 31.8 req/s (baseline 0.8 req/s). Low URL entropy (3.15, z=7.83) and high top-IP concentration (4.0%)."
+        },
+        {
+          "poll_time": 1792223187.8510494,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 48.6,
+          "baseline_rps": 0.8,
+          "url_entropy": 3.152,
+          "ip_entropy": 6.486,
+          "top_ip_concentration_pct": 2.7,
+          "verdict_reason": "Traffic flood: 48.6 req/s (baseline 0.8 req/s). Low URL entropy (3.15, z=7.84) and high top-IP concentration (2.7%)."
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-17T07:46:17.404662+00:00",
+        "reset_verified": false,
+        "actions": [
+          "Unblocked 203.0.113.199 directly on cloudshield-backend-1 (172.28.0.11:8000)",
+          "Tier reset to NONE confirmed directly on cloudshield-backend-1 (172.28.0.11:8000)",
+          "Unblocked 203.0.113.199 directly on cloudshield-backend-2 (172.28.0.12:8000)",
+          "Tier reset to NONE confirmed directly on cloudshield-backend-2 (172.28.0.12:8000)"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.11:8000": {
+            "container": "cloudshield-backend-1",
+            "classification": "NORMAL",
+            "mitigation_tier": "TIER_1",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 1,
+            "blocked_ips": [
+              "203.0.113.199"
+            ],
+            "is_clean": false
+          },
+          "172.28.0.12:8000": {
+            "container": "cloudshield-backend-2",
+            "classification": "NORMAL",
+            "mitigation_tier": "TIER_1",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 1,
+            "blocked_ips": [
+              "203.0.113.199"
+            ],
+            "is_clean": false
+          }
+        },
+        "baseline_state": "UNVERIFIED"
+      }
+    },
+    {
+      "scenario_name": "7_ambiguous_traffic",
+      "scenario_description": "Moderate traffic surge (20-24 RPS) near the 1.8x baseline threshold with intermediate entropy",
+      "ground_truth_label": "SUSPICIOUS",
+      "observed_classification": "NORMAL",
+      "classification_matched": false,
+      "traffic_start": "2026-10-17T07:46:58.145025+00:00",
+      "traffic_end": "2026-10-17T07:47:06.155391+00:00",
+      "scheduler_stats": {
+        "configured_target_rps": 22.0,
+        "configured_duration_sec": 8.0,
+        "concurrency": 6,
+        "total_scheduling_slots": 176,
+        "submitted_requests": 166,
+        "completed_requests": 166,
+        "worker_errors": 0,
+        "worker_timeouts": 0,
+        "unfinished_requests": 0,
+        "cancelled_pending_requests": 0,
+        "running_at_shutdown_requests": 0,
+        "missed_scheduling_slots": 10,
+        "backpressure_wait_events": 36,
+        "max_lateness_sec": 0.2606,
+        "drain_timed_out": false,
+        "drain_timeout_sec": 3.0,
+        "executor_shutdown_waited": false,
+        "dispatch_deadline_respected": true,
+        "workload_fully_delivered": false,
+        "rate_limited_or_incomplete": true,
+        "timestamps": {
+          "overall_start_iso": "2026-10-17T07:46:58.145025+00:00",
+          "first_dispatch_sec": 0.001,
+          "last_dispatch_sec": 7.9917,
+          "last_completion_sec": 8.009,
+          "dispatch_duration_sec": 7.9906,
+          "total_completion_duration_sec": 8.0091
+        },
+        "dispatch_window_rps": 20.65,
+        "completed_request_throughput_rps": 20.73,
+        "target_rps": 22.0,
+        "scheduled_requests": 166,
+        "completion_throughput_rps": 20.73,
+        "within_configured_duration": true,
+        "is_rate_limited_or_incomplete": true,
+        "metric_definitions": {
+          "total_scheduling_slots": "Number of temporal dispatch slots configured for the run: int(duration * target_rps).",
+          "submitted_requests": "Number of tasks successfully submitted to the executor before the dispatch deadline.",
+          "completed_requests": "Number of tasks whose futures genuinely finished. Includes successful responses and HTTP error status codes (403, 429, 503, 504). HTTP 503 is a completed HTTP request from Nginx or backend, NOT a worker error.",
+          "worker_errors": "Tasks that terminated with an unhandled Python exception in the worker thread.",
+          "worker_timeouts": "Tasks that were still active or pending when the drain deadline expired.",
+          "unfinished_requests": "Tasks remaining unfinished (running or pending) after the drain timeout.",
+          "cancelled_pending_requests": "Unfinished tasks that were successfully cancelled before starting execution in the worker thread.",
+          "running_at_shutdown_requests": "Unfinished tasks that were already executing on worker threads (cancelling could not abort them).",
+          "missed_scheduling_slots": "Scheduling slots skipped because the monotonic clock reached the duration deadline or experienced excessive delay.",
+          "dispatch_window_rps": "Rate of task submission measured strictly within the active dispatch window: (submitted_requests - 1) / dispatch_duration_sec.",
+          "completed_request_throughput_rps": "Genuinely completed tasks per second over the total run duration: completed_requests / total_completion_duration_sec. Excludes timeouts, errors, and synthetic records.",
+          "dispatch_deadline_respected": "True if no task was submitted at or after immutable_start + duration.",
+          "workload_fully_delivered": "True if all scheduled slots were submitted, completed without errors or timeouts, and no backpressure occurred.",
+          "rate_limited_or_incomplete": "True if backpressure, missed slots, worker errors, timeouts, or incomplete submissions prevented full workload delivery.",
+          "runtime_bounding_note": "Cancelling a future prevents queued pending tasks from starting, but cannot abort a worker thread that is already actively running. The drain timeout bounds the scheduler's wait time, not necessarily total Python process lifetime if threads remain running."
+        }
+      },
+      "dispatch_duration_sec": 7.9906,
+      "total_completion_duration_sec": 8.0091,
+      "total_scheduling_slots": 176,
+      "submitted_requests": 166,
+      "completed_requests": 166,
+      "worker_errors": 0,
+      "worker_timeouts": 0,
+      "unfinished_requests": 0,
+      "missed_scheduling_slots": 10,
+      "dispatch_window_rps": 20.65,
+      "completed_request_throughput_rps": 20.73,
+      "dispatch_deadline_respected": true,
+      "workload_fully_delivered": false,
+      "rate_limited_or_incomplete": true,
+      "scheduled_requests": 166,
+      "completion_throughput_rps": 20.73,
+      "actual_duration_sec": 8.01,
+      "total_requests_sent": 166,
+      "achieved_rps": 20.7,
+      "http_status_distribution": {
+        "200": 166
+      },
+      "time_to_detect_sec": null,
+      "legitimate_probes": {
+        "probes_sent": 7,
+        "probes_successful": 7,
+        "availability_pct": 100.0,
+        "mean_latency_ms": 229.36,
+        "p50_latency_ms": 30.16,
+        "p95_latency_ms": 1087.77,
+        "p99_latency_ms": 1087.77
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "NONE",
+        "blocked_ips_count": 0,
+        "blocked_ips_list": [],
+        "blocked_scenario_ips": [],
+        "status_403_count": 0,
+        "status_429_count": 0,
+        "status_503_count": 0,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": false,
+        "legitimate_probes_available": true
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792223218.1450257,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223218.6644113,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.5,
+          "url_entropy": 1.0,
+          "ip_entropy": 1.5,
+          "top_ip_concentration_pct": 50.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223219.1813247,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.5,
+          "url_entropy": 1.0,
+          "ip_entropy": 1.5,
+          "top_ip_concentration_pct": 50.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223219.7050648,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.5,
+          "url_entropy": 1.0,
+          "ip_entropy": 1.5,
+          "top_ip_concentration_pct": 50.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223220.240484,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.5,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223220.7596176,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.5,
+          "url_entropy": 1.0,
+          "ip_entropy": 1.5,
+          "top_ip_concentration_pct": 50.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223221.2817976,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.5,
+          "url_entropy": 1.0,
+          "ip_entropy": 1.5,
+          "top_ip_concentration_pct": 50.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223221.8055255,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.5,
+          "url_entropy": 1.0,
+          "ip_entropy": 1.5,
+          "top_ip_concentration_pct": 50.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223222.3251579,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.5,
+          "url_entropy": 1.0,
+          "ip_entropy": 1.5,
+          "top_ip_concentration_pct": 50.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223222.8425791,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 10.4,
+          "baseline_rps": 0.5,
+          "url_entropy": 0.988,
+          "ip_entropy": 2.714,
+          "top_ip_concentration_pct": 21.2,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223224.9516225,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 10.4,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.994,
+          "ip_entropy": 2.683,
+          "top_ip_concentration_pct": 24.4,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223225.473408,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 10.4,
+          "baseline_rps": 0.5,
+          "url_entropy": 0.988,
+          "ip_entropy": 2.714,
+          "top_ip_concentration_pct": 21.2,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792223225.993403,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 10.4,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.994,
+          "ip_entropy": 2.683,
+          "top_ip_concentration_pct": 24.4,
+          "verdict_reason": "All metrics within baseline thresholds."
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-17T07:46:58.143996+00:00",
+        "reset_verified": true,
+        "actions": [
+          "Unblocked 203.0.113.199 directly on cloudshield-backend-1 (172.28.0.11:8000)",
+          "Tier reset to NONE confirmed directly on cloudshield-backend-1 (172.28.0.11:8000)",
+          "Unblocked 203.0.113.199 directly on cloudshield-backend-2 (172.28.0.12:8000)",
+          "Tier reset to NONE confirmed directly on cloudshield-backend-2 (172.28.0.12:8000)"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.11:8000": {
+            "container": "cloudshield-backend-1",
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "blocked_ips": [],
+            "is_clean": true
+          },
+          "172.28.0.12:8000": {
+            "container": "cloudshield-backend-2",
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "blocked_ips": [],
+            "is_clean": true
+          }
+        },
+        "baseline_state": "NORMAL"
+      }
+    }
+  ],
+  "summary_metrics": {
+    "binary_evaluation": {
+      "metric_scope": "Scenario-level classification across the 7 benchmark scenarios (NOT request-level packet detection performance)",
+      "definition": "Positive Class = ATTACK scenarios (Concentrated, Distributed, Low-Rate, Honeypot); Negative Class = Non-ATTACK scenarios (Normal, Flash Crowd, Ambiguous)",
+      "true_positives": 2,
+      "false_positives": 1,
+      "true_negatives": 2,
+      "false_negatives": 2,
+      "precision": 0.6667,
+      "recall": 0.5,
+      "false_positive_rate": 0.3333,
+      "false_negative_rate": 0.5
+    },
+    "multiclass_evaluation": {
+      "metric_scope": "Scenario-level classification across the 7 benchmark scenarios",
+      "classes": [
+        "NORMAL",
+        "ATTACK",
+        "FLASH_CROWD",
+        "SUSPICIOUS"
+      ],
+      "confusion_matrix": {
+        "NORMAL": {
+          "NORMAL": 1,
+          "ATTACK": 0,
+          "FLASH_CROWD": 0,
+          "SUSPICIOUS": 0
+        },
+        "ATTACK": {
+          "NORMAL": 1,
+          "ATTACK": 2,
+          "FLASH_CROWD": 0,
+          "SUSPICIOUS": 1
+        },
+        "FLASH_CROWD": {
+          "NORMAL": 0,
+          "ATTACK": 1,
+          "FLASH_CROWD": 0,
+          "SUSPICIOUS": 0
+        },
+        "SUSPICIOUS": {
+          "NORMAL": 1,
+          "ATTACK": 0,
+          "FLASH_CROWD": 0,
+          "SUSPICIOUS": 0
+        }
+      },
+      "exact_match_accuracy": 0.4286,
+      "correct_matches": 3,
+      "total_scenarios": 7
+    }
+  },
+  "final_cleanup": {
+    "timestamp": "2026-10-17T07:47:34.258454+00:00",
+    "reset_verified": true,
+    "actions": [
+      "Tier reset to NONE confirmed directly on cloudshield-backend-1 (172.28.0.11:8000)",
+      "Tier reset to NONE confirmed directly on cloudshield-backend-2 (172.28.0.12:8000)"
+    ],
+    "tier_reset_confirmed_nodes": [
+      "172.28.0.11:8000",
+      "172.28.0.12:8000"
+    ],
+    "backend_verifications": {
+      "172.28.0.11:8000": {
+        "container": "cloudshield-backend-1",
+        "classification": "NORMAL",
+        "mitigation_tier": "NONE",
+        "requests_per_sec": 0.2,
+        "blocked_ip_count": 0,
+        "blocked_ips": [],
+        "is_clean": true
+      },
+      "172.28.0.12:8000": {
+        "container": "cloudshield-backend-2",
+        "classification": "NORMAL",
+        "mitigation_tier": "NONE",
+        "requests_per_sec": 0.2,
+        "blocked_ip_count": 0,
+        "blocked_ips": [],
+        "is_clean": true
+      }
+    },
+    "baseline_state": "NORMAL"
+  }
+}

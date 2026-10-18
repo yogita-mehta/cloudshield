@@ -1,0 +1,1531 @@
+{
+  "benchmark_metadata": {
+    "evaluation_validity": "INVALID_CONTROLLED_RATE_EVALUATION",
+    "validity_note": "Concurrency multiplier bug in scheduler caused achieved RPS to greatly exceed configured target_rps across scenarios (e.g., 31 RPS vs 12 target in Normal, 224 RPS vs 55 target in Flash Crowd).",
+    "execution_timestamp": "2026-10-16T13:06:21.065565+00:00",
+    "target_url": "http://localhost:8080",
+    "simulation_token_configured": true,
+    "total_scenarios_evaluated": 7,
+    "benchmark_completed": true,
+    "abort_reason": null,
+    "metric_scope_disclosure": "Precision, recall, FPR, and FNR are scenario-level metrics evaluating whether CloudShield classifies each of the 7 test scenarios into the correct high-level verdict. They do NOT represent individual request-level packet inspection metrics.",
+    "ttd_measurement_caveat": "Time-To-Detect (TTD) resolution is limited by the 4.0s background evaluation loop in backend/app/main.py and the 0.5s observer polling cadence. Observed TTD values are discrete measurements quantized to evaluation intervals (~4s, ~8s), not continuous line-rate detection latency.",
+    "safety_limits": {
+      "max_concurrency_workers": 25,
+      "max_target_rps": 65,
+      "max_scenario_duration_sec": 12
+    },
+    "limitations_and_residual_state": [
+      "Nginx access log telemetry uses a 10s sliding window; an 11s pause is enforced between scenarios.",
+      "EWMA baselines in entropy_engine evolve dynamically on normal traffic and are not hard-reset.",
+      "Docker Desktop on Windows NATs direct host connections to 172.28.0.1; simulation channel is required for synthetic source IPs."
+    ]
+  },
+  "scenario_results": [
+    {
+      "scenario_name": "1_normal_traffic",
+      "scenario_description": "Baseline legitimate web browsing across 7 endpoints with distributed client IPs",
+      "ground_truth_label": "NORMAL",
+      "observed_classification": "SUSPICIOUS",
+      "classification_matched": false,
+      "traffic_start": "2026-10-16T13:03:42.389274+00:00",
+      "traffic_end": "2026-10-16T13:03:52.441379+00:00",
+      "actual_duration_sec": 10.05,
+      "total_requests_sent": 312,
+      "achieved_rps": 31.0,
+      "http_status_distribution": {
+        "200": 312
+      },
+      "time_to_detect_sec": 3.71,
+      "legitimate_probes": {
+        "probes_sent": 34,
+        "probes_successful": 34,
+        "availability_pct": 100.0,
+        "mean_latency_ms": 46.7,
+        "p50_latency_ms": 24.6,
+        "p95_latency_ms": 287.65,
+        "p99_latency_ms": 411.36
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "TIER_1",
+        "blocked_ips_count": 0,
+        "blocked_ips_list": [],
+        "blocked_scenario_ips": [],
+        "status_403_count": 0,
+        "status_429_count": 0,
+        "status_503_count": 0,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": true,
+        "legitimate_probes_available": true
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792155822.3892741,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155822.9240668,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155823.4536362,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155823.9897907,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155824.5128574,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155825.0405152,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155825.5716205,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155826.0944142,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 23.0,
+          "baseline_rps": 0.4,
+          "url_entropy": 2.574,
+          "ip_entropy": 4.404,
+          "top_ip_concentration_pct": 11.5,
+          "verdict_reason": "Moderate RPS elevation: 23.0 req/s vs baseline 0.4 req/s."
+        },
+        {
+          "poll_time": 1792155826.6137798,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 23.0,
+          "baseline_rps": 0.4,
+          "url_entropy": 2.571,
+          "ip_entropy": 4.395,
+          "top_ip_concentration_pct": 12.2,
+          "verdict_reason": "Moderate RPS elevation: 23.0 req/s vs baseline 0.4 req/s."
+        },
+        {
+          "poll_time": 1792155827.147399,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 23.0,
+          "baseline_rps": 0.4,
+          "url_entropy": 2.574,
+          "ip_entropy": 4.404,
+          "top_ip_concentration_pct": 11.5,
+          "verdict_reason": "Moderate RPS elevation: 23.0 req/s vs baseline 0.4 req/s."
+        },
+        {
+          "poll_time": 1792155827.6685529,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 23.0,
+          "baseline_rps": 0.4,
+          "url_entropy": 2.571,
+          "ip_entropy": 4.395,
+          "top_ip_concentration_pct": 12.2,
+          "verdict_reason": "Moderate RPS elevation: 23.0 req/s vs baseline 0.4 req/s."
+        },
+        {
+          "poll_time": 1792155828.2002554,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 23.0,
+          "baseline_rps": 0.4,
+          "url_entropy": 2.574,
+          "ip_entropy": 4.404,
+          "top_ip_concentration_pct": 11.5,
+          "verdict_reason": "Moderate RPS elevation: 23.0 req/s vs baseline 0.4 req/s."
+        },
+        {
+          "poll_time": 1792155828.7239065,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 23.0,
+          "baseline_rps": 0.4,
+          "url_entropy": 2.571,
+          "ip_entropy": 4.395,
+          "top_ip_concentration_pct": 12.2,
+          "verdict_reason": "Moderate RPS elevation: 23.0 req/s vs baseline 0.4 req/s."
+        },
+        {
+          "poll_time": 1792155829.242515,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 23.0,
+          "baseline_rps": 0.4,
+          "url_entropy": 2.574,
+          "ip_entropy": 4.404,
+          "top_ip_concentration_pct": 11.5,
+          "verdict_reason": "Moderate RPS elevation: 23.0 req/s vs baseline 0.4 req/s."
+        },
+        {
+          "poll_time": 1792155829.7621355,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 23.0,
+          "baseline_rps": 0.4,
+          "url_entropy": 2.574,
+          "ip_entropy": 4.404,
+          "top_ip_concentration_pct": 11.5,
+          "verdict_reason": "Moderate RPS elevation: 23.0 req/s vs baseline 0.4 req/s."
+        },
+        {
+          "poll_time": 1792155830.282365,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 23.0,
+          "baseline_rps": 0.4,
+          "url_entropy": 2.542,
+          "ip_entropy": 4.535,
+          "top_ip_concentration_pct": 11.9,
+          "verdict_reason": "Moderate RPS elevation: 23.0 req/s vs baseline 0.4 req/s."
+        },
+        {
+          "poll_time": 1792155830.9155467,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 23.0,
+          "baseline_rps": 0.4,
+          "url_entropy": 2.542,
+          "ip_entropy": 4.533,
+          "top_ip_concentration_pct": 11.7,
+          "verdict_reason": "Moderate RPS elevation: 23.0 req/s vs baseline 0.4 req/s."
+        },
+        {
+          "poll_time": 1792155831.4287553,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 23.0,
+          "baseline_rps": 0.4,
+          "url_entropy": 2.542,
+          "ip_entropy": 4.535,
+          "top_ip_concentration_pct": 11.9,
+          "verdict_reason": "Moderate RPS elevation: 23.0 req/s vs baseline 0.4 req/s."
+        },
+        {
+          "poll_time": 1792155831.9459474,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 23.0,
+          "baseline_rps": 0.4,
+          "url_entropy": 2.542,
+          "ip_entropy": 4.533,
+          "top_ip_concentration_pct": 11.7,
+          "verdict_reason": "Moderate RPS elevation: 23.0 req/s vs baseline 0.4 req/s."
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-16T13:03:42.379369+00:00",
+        "reset_verified": true,
+        "actions": [
+          "Tier reset to NONE confirmed on upstream nodes: ['172.28.0.11:8000', '172.28.0.12:8000']"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.11:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "is_clean": true
+          },
+          "172.28.0.12:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "is_clean": true
+          }
+        },
+        "baseline_state": "NORMAL"
+      }
+    },
+    {
+      "scenario_name": "2_concentrated_flood",
+      "scenario_description": "High-volume HTTP flood targeting single endpoint /api/v1/sample/hello from 2 concentrated IPs",
+      "ground_truth_label": "ATTACK",
+      "observed_classification": "ATTACK",
+      "classification_matched": true,
+      "traffic_start": "2026-10-16T13:04:04.849979+00:00",
+      "traffic_end": "2026-10-16T13:04:14.900869+00:00",
+      "actual_duration_sec": 10.05,
+      "total_requests_sent": 2760,
+      "achieved_rps": 274.6,
+      "http_status_distribution": {
+        "200": 420,
+        "503": 2340
+      },
+      "time_to_detect_sec": 3.17,
+      "legitimate_probes": {
+        "probes_sent": 34,
+        "probes_successful": 12,
+        "availability_pct": 35.29,
+        "mean_latency_ms": 46.92,
+        "p50_latency_ms": 22.22,
+        "p95_latency_ms": 363.22,
+        "p99_latency_ms": 537.13
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "TIER_1",
+        "blocked_ips_count": 0,
+        "blocked_ips_list": [],
+        "blocked_scenario_ips": [],
+        "status_403_count": 0,
+        "status_429_count": 0,
+        "status_503_count": 2340,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": false,
+        "legitimate_probes_available": false
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792155844.849979,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155845.9275486,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155846.9754124,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155847.5023696,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155848.0179634,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 13.6,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.082,
+          "top_ip_concentration_pct": 50.9,
+          "verdict_reason": "Moderate RPS elevation: 13.6 req/s vs baseline 0.4 req/s.; Elevated 5xx error rate: 88.73%."
+        },
+        {
+          "poll_time": 1792155850.868454,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 13.6,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.082,
+          "top_ip_concentration_pct": 50.9,
+          "verdict_reason": "Moderate RPS elevation: 13.6 req/s vs baseline 0.4 req/s.; Elevated 5xx error rate: 88.73%."
+        },
+        {
+          "poll_time": 1792155851.3979077,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 13.6,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.082,
+          "top_ip_concentration_pct": 50.9,
+          "verdict_reason": "Moderate RPS elevation: 13.6 req/s vs baseline 0.4 req/s.; Elevated 5xx error rate: 88.73%."
+        },
+        {
+          "poll_time": 1792155852.4511893,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 274.4,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.071,
+          "top_ip_concentration_pct": 50.7,
+          "verdict_reason": "Traffic flood: 274.4 req/s (baseline 0.4 req/s). Low URL entropy (0.00, z=0.0) and high top-IP concentration (50.7%)."
+        },
+        {
+          "poll_time": 1792155853.253095,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 274.4,
+          "baseline_rps": 0.4,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.071,
+          "top_ip_concentration_pct": 50.8,
+          "verdict_reason": "Traffic flood: 274.4 req/s (baseline 0.4 req/s). Low URL entropy (0.00, z=0.0) and high top-IP concentration (50.8%)."
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-16T13:04:04.849979+00:00",
+        "reset_verified": false,
+        "actions": [
+          "Tier reset to NONE confirmed on upstream nodes: ['172.28.0.11:8000', '172.28.0.12:8000']"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.12:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "TIER_1",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "is_clean": false
+          },
+          "172.28.0.11:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "TIER_1",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "is_clean": false
+          }
+        },
+        "baseline_state": "UNVERIFIED"
+      }
+    },
+    {
+      "scenario_name": "3_distributed_flood",
+      "scenario_description": "High-volume HTTP flood targeting single endpoint /api/v1/sample/hello from 50 distributed botnet IPs",
+      "ground_truth_label": "ATTACK",
+      "observed_classification": "ATTACK",
+      "classification_matched": true,
+      "traffic_start": "2026-10-16T13:04:28.116387+00:00",
+      "traffic_end": "2026-10-16T13:04:38.121573+00:00",
+      "actual_duration_sec": 10.01,
+      "total_requests_sent": 2920,
+      "achieved_rps": 291.8,
+      "http_status_distribution": {
+        "200": 422,
+        "503": 2498
+      },
+      "time_to_detect_sec": 2.16,
+      "legitimate_probes": {
+        "probes_sent": 35,
+        "probes_successful": 11,
+        "availability_pct": 31.43,
+        "mean_latency_ms": 36.29,
+        "p50_latency_ms": 18.41,
+        "p95_latency_ms": 272.26,
+        "p99_latency_ms": 275.83
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "TIER_1",
+        "blocked_ips_count": 0,
+        "blocked_ips_list": [],
+        "blocked_scenario_ips": [],
+        "status_403_count": 0,
+        "status_429_count": 0,
+        "status_503_count": 2498,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": false,
+        "legitimate_probes_available": false
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792155868.1163876,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155868.675403,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155870.2770283,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 5.61,
+          "top_ip_concentration_pct": 3.4,
+          "verdict_reason": "Elevated 5xx error rate: 87.12%."
+        },
+        {
+          "poll_time": 1792155872.6662211,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 5.61,
+          "top_ip_concentration_pct": 3.4,
+          "verdict_reason": "Elevated 5xx error rate: 87.12%."
+        },
+        {
+          "poll_time": 1792155874.7516403,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 115.8,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 5.578,
+          "top_ip_concentration_pct": 3.6,
+          "verdict_reason": "Traffic flood: 115.8 req/s (baseline 0.3 req/s). Low URL entropy (0.00, z=0.0) and high top-IP concentration (3.6%)."
+        },
+        {
+          "poll_time": 1792155877.5884323,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 115.8,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 5.58,
+          "top_ip_concentration_pct": 3.6,
+          "verdict_reason": "Traffic flood: 115.8 req/s (baseline 0.3 req/s). Low URL entropy (0.00, z=0.0) and high top-IP concentration (3.6%)."
+        },
+        {
+          "poll_time": 1792155878.105531,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 115.8,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 5.578,
+          "top_ip_concentration_pct": 3.6,
+          "verdict_reason": "Traffic flood: 115.8 req/s (baseline 0.3 req/s). Low URL entropy (0.00, z=0.0) and high top-IP concentration (3.6%)."
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-16T13:04:28.116387+00:00",
+        "reset_verified": false,
+        "actions": [
+          "Tier reset to NONE confirmed on upstream nodes: ['172.28.0.11:8000', '172.28.0.12:8000']"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.11:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "TIER_1",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "is_clean": false
+          },
+          "172.28.0.12:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "TIER_1",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "is_clean": false
+          }
+        },
+        "baseline_state": "UNVERIFIED"
+      }
+    },
+    {
+      "scenario_name": "4_low_rate_flood",
+      "scenario_description": "Low-rate HTTP flood (4-6 RPS) staying below volumetric surge thresholds on legitimate endpoints",
+      "ground_truth_label": "ATTACK",
+      "observed_classification": "NORMAL",
+      "classification_matched": false,
+      "traffic_start": "2026-10-16T13:04:50.996701+00:00",
+      "traffic_end": "2026-10-16T13:05:01.162916+00:00",
+      "actual_duration_sec": 10.17,
+      "total_requests_sent": 78,
+      "achieved_rps": 7.7,
+      "http_status_distribution": {
+        "200": 78
+      },
+      "time_to_detect_sec": null,
+      "legitimate_probes": {
+        "probes_sent": 33,
+        "probes_successful": 33,
+        "availability_pct": 100.0,
+        "mean_latency_ms": 63.27,
+        "p50_latency_ms": 22.48,
+        "p95_latency_ms": 570.19,
+        "p99_latency_ms": 716.56
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "NONE",
+        "blocked_ips_count": 0,
+        "blocked_ips_list": [],
+        "blocked_scenario_ips": [],
+        "status_403_count": 0,
+        "status_429_count": 0,
+        "status_503_count": 0,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": false,
+        "legitimate_probes_available": true
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792155890.9967012,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.4,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155891.508654,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.4,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155892.0404947,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155892.5768833,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.4,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155893.1263359,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155893.6474056,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.4,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.822,
+          "top_ip_concentration_pct": 35.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155894.5565546,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.4,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.822,
+          "top_ip_concentration_pct": 35.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155895.0779858,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.4,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.822,
+          "top_ip_concentration_pct": 35.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155895.5986629,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.4,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.822,
+          "top_ip_concentration_pct": 35.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155896.1271875,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.4,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.822,
+          "top_ip_concentration_pct": 35.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155896.6536682,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.4,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.822,
+          "top_ip_concentration_pct": 35.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155897.1936538,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.4,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.822,
+          "top_ip_concentration_pct": 35.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155897.7249377,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.4,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.822,
+          "top_ip_concentration_pct": 35.5,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155898.244665,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 11.8,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.948,
+          "top_ip_concentration_pct": 32.9,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155899.3994796,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 11.8,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.948,
+          "top_ip_concentration_pct": 32.9,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155899.9342785,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 11.8,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.948,
+          "top_ip_concentration_pct": 32.9,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155900.4513376,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 11.8,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.948,
+          "top_ip_concentration_pct": 32.9,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155900.9864445,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 11.8,
+          "baseline_rps": 0.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 1.948,
+          "top_ip_concentration_pct": 32.9,
+          "verdict_reason": "All metrics within baseline thresholds."
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-16T13:04:50.989876+00:00",
+        "reset_verified": false,
+        "actions": [
+          "Tier reset to NONE confirmed on upstream nodes: ['172.28.0.11:8000', '172.28.0.12:8000']"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.11:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "TIER_1",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "is_clean": false
+          },
+          "172.28.0.12:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "TIER_1",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "is_clean": false
+          }
+        },
+        "baseline_state": "UNVERIFIED"
+      }
+    },
+    {
+      "scenario_name": "5_honeypot_tripwire",
+      "scenario_description": "Adversary scanner accessing decoy endpoint /admin-backup/ triggering deterministic tripwire",
+      "ground_truth_label": "ATTACK",
+      "observed_classification": "ATTACK",
+      "classification_matched": true,
+      "traffic_start": "2026-10-16T13:05:14.384423+00:00",
+      "traffic_end": "2026-10-16T13:05:20.663821+00:00",
+      "actual_duration_sec": 6.28,
+      "total_requests_sent": 40,
+      "achieved_rps": 6.4,
+      "http_status_distribution": {
+        "403": 40
+      },
+      "time_to_detect_sec": 3.18,
+      "legitimate_probes": {
+        "probes_sent": 21,
+        "probes_successful": 21,
+        "availability_pct": 100.0,
+        "mean_latency_ms": 59.64,
+        "p50_latency_ms": 19.02,
+        "p95_latency_ms": 38.03,
+        "p99_latency_ms": 812.72
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "TIER_2",
+        "blocked_ips_count": 1,
+        "blocked_ips_list": [
+          "203.0.113.199"
+        ],
+        "blocked_scenario_ips": [
+          "203.0.113.199"
+        ],
+        "status_403_count": 40,
+        "status_429_count": 0,
+        "status_503_count": 0,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": true,
+        "legitimate_probes_available": true
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792155914.3844237,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 3.1,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155914.925191,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 3.1,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155915.4575338,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 3.1,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155915.9775798,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 3.1,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155916.4991844,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 3.1,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155917.0292747,
+          "classification": "NORMAL",
+          "mitigation_tier": "NONE",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 3.1,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155917.5650232,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 3.2,
+          "baseline_rps": 2.7,
+          "url_entropy": 0.918,
+          "ip_entropy": 0.918,
+          "top_ip_concentration_pct": 66.7,
+          "verdict_reason": "Honeypot decoy accessed by IP(s): 203.0.113.199"
+        },
+        {
+          "poll_time": 1792155918.5100543,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 3.2,
+          "baseline_rps": 2.7,
+          "url_entropy": 0.918,
+          "ip_entropy": 0.918,
+          "top_ip_concentration_pct": 66.7,
+          "verdict_reason": "Honeypot decoy accessed by IP(s): 203.0.113.199"
+        },
+        {
+          "poll_time": 1792155919.0391326,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 3.2,
+          "baseline_rps": 2.7,
+          "url_entropy": 0.918,
+          "ip_entropy": 0.918,
+          "top_ip_concentration_pct": 66.7,
+          "verdict_reason": "Honeypot decoy accessed by IP(s): 203.0.113.199"
+        },
+        {
+          "poll_time": 1792155919.5597677,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 3.2,
+          "baseline_rps": 2.7,
+          "url_entropy": 0.918,
+          "ip_entropy": 0.918,
+          "top_ip_concentration_pct": 66.7,
+          "verdict_reason": "Honeypot decoy accessed by IP(s): 203.0.113.199"
+        },
+        {
+          "poll_time": 1792155920.0773253,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 3.2,
+          "baseline_rps": 2.7,
+          "url_entropy": 0.918,
+          "ip_entropy": 0.918,
+          "top_ip_concentration_pct": 66.7,
+          "verdict_reason": "Honeypot decoy accessed by IP(s): 203.0.113.199"
+        },
+        {
+          "poll_time": 1792155920.5950677,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 3.2,
+          "baseline_rps": 2.7,
+          "url_entropy": 0.918,
+          "ip_entropy": 0.918,
+          "top_ip_concentration_pct": 66.7,
+          "verdict_reason": "Honeypot decoy accessed by IP(s): 203.0.113.199"
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-16T13:05:14.384423+00:00",
+        "reset_verified": true,
+        "actions": [
+          "Tier reset to NONE confirmed on upstream nodes: ['172.28.0.11:8000', '172.28.0.12:8000']"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.12:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "is_clean": true
+          },
+          "172.28.0.11:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "NONE",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "is_clean": true
+          }
+        },
+        "baseline_state": "NORMAL"
+      }
+    },
+    {
+      "scenario_name": "6_flash_crowd",
+      "scenario_description": "Viral legitimate traffic surge across 10 diverse endpoints from 100 widely distributed IPs",
+      "ground_truth_label": "FLASH_CROWD",
+      "observed_classification": "ATTACK",
+      "classification_matched": false,
+      "traffic_start": "2026-10-16T13:05:33.852169+00:00",
+      "traffic_end": "2026-10-16T13:05:43.897416+00:00",
+      "actual_duration_sec": 10.05,
+      "total_requests_sent": 2250,
+      "achieved_rps": 224.0,
+      "http_status_distribution": {
+        "200": 423,
+        "503": 1827
+      },
+      "time_to_detect_sec": 2.12,
+      "legitimate_probes": {
+        "probes_sent": 32,
+        "probes_successful": 11,
+        "availability_pct": 34.38,
+        "mean_latency_ms": 67.02,
+        "p50_latency_ms": 25.77,
+        "p95_latency_ms": 665.32,
+        "p99_latency_ms": 712.7
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "TIER_1",
+        "blocked_ips_count": 1,
+        "blocked_ips_list": [
+          "203.0.113.199"
+        ],
+        "blocked_scenario_ips": [],
+        "status_403_count": 0,
+        "status_429_count": 0,
+        "status_503_count": 1827,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": false,
+        "legitimate_probes_available": false
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792155933.8514454,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_2",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 2.3,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155935.976106,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 64.2,
+          "baseline_rps": 2.0,
+          "url_entropy": 3.166,
+          "ip_entropy": 6.47,
+          "top_ip_concentration_pct": 3.4,
+          "verdict_reason": "Traffic flood: 64.2 req/s (baseline 2.0 req/s). Low URL entropy (3.17, z=7.91) and high top-IP concentration (3.4%)."
+        },
+        {
+          "poll_time": 1792155937.828123,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 64.2,
+          "baseline_rps": 2.0,
+          "url_entropy": 3.166,
+          "ip_entropy": 6.47,
+          "top_ip_concentration_pct": 3.4,
+          "verdict_reason": "Traffic flood: 64.2 req/s (baseline 2.0 req/s). Low URL entropy (3.17, z=7.91) and high top-IP concentration (3.4%)."
+        },
+        {
+          "poll_time": 1792155938.866239,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 64.2,
+          "baseline_rps": 2.0,
+          "url_entropy": 3.166,
+          "ip_entropy": 6.47,
+          "top_ip_concentration_pct": 3.4,
+          "verdict_reason": "Traffic flood: 64.2 req/s (baseline 2.0 req/s). Low URL entropy (3.17, z=7.91) and high top-IP concentration (3.4%)."
+        },
+        {
+          "poll_time": 1792155939.9369009,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 64.2,
+          "baseline_rps": 2.0,
+          "url_entropy": 3.166,
+          "ip_entropy": 6.47,
+          "top_ip_concentration_pct": 3.4,
+          "verdict_reason": "Traffic flood: 64.2 req/s (baseline 2.0 req/s). Low URL entropy (3.17, z=7.91) and high top-IP concentration (3.4%)."
+        },
+        {
+          "poll_time": 1792155940.9819741,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 224.8,
+          "baseline_rps": 2.0,
+          "url_entropy": 3.158,
+          "ip_entropy": 6.468,
+          "top_ip_concentration_pct": 2.9,
+          "verdict_reason": "Traffic flood: 224.8 req/s (baseline 2.0 req/s). Low URL entropy (3.16, z=7.89) and high top-IP concentration (2.9%)."
+        },
+        {
+          "poll_time": 1792155943.074222,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 224.8,
+          "baseline_rps": 2.0,
+          "url_entropy": 3.158,
+          "ip_entropy": 6.468,
+          "top_ip_concentration_pct": 2.9,
+          "verdict_reason": "Traffic flood: 224.8 req/s (baseline 2.0 req/s). Low URL entropy (3.16, z=7.89) and high top-IP concentration (2.9%)."
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-16T13:05:33.842999+00:00",
+        "reset_verified": false,
+        "actions": [
+          "Unblocked 203.0.113.199",
+          "Tier reset to NONE confirmed on upstream nodes: ['172.28.0.11:8000', '172.28.0.12:8000']"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.12:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "TIER_2",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 1,
+            "is_clean": false
+          },
+          "172.28.0.11:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "TIER_2",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 1,
+            "is_clean": false
+          }
+        },
+        "baseline_state": "UNVERIFIED"
+      }
+    },
+    {
+      "scenario_name": "7_ambiguous_traffic",
+      "scenario_description": "Moderate traffic surge (20-24 RPS) near the 1.8x baseline threshold with intermediate entropy",
+      "ground_truth_label": "SUSPICIOUS",
+      "observed_classification": "ATTACK",
+      "classification_matched": false,
+      "traffic_start": "2026-10-16T13:05:57.731395+00:00",
+      "traffic_end": "2026-10-16T13:06:06.772113+00:00",
+      "actual_duration_sec": 9.04,
+      "total_requests_sent": 444,
+      "achieved_rps": 49.1,
+      "http_status_distribution": {
+        "200": 301,
+        "503": 143
+      },
+      "time_to_detect_sec": 2.65,
+      "legitimate_probes": {
+        "probes_sent": 24,
+        "probes_successful": 19,
+        "availability_pct": 79.17,
+        "mean_latency_ms": 76.57,
+        "p50_latency_ms": 29.96,
+        "p95_latency_ms": 72.29,
+        "p99_latency_ms": 1181.16
+      },
+      "mitigation_evidence": {
+        "active_mitigation_tier": "TIER_1",
+        "blocked_ips_count": 1,
+        "blocked_ips_list": [
+          "203.0.113.199"
+        ],
+        "blocked_scenario_ips": [],
+        "status_403_count": 0,
+        "status_429_count": 0,
+        "status_503_count": 143,
+        "status_other_error_count": 0,
+        "status_code_interpretation": "HTTP 403: Tier 2 in-memory/Nginx blocklist drops. HTTP 503: Nginx proxy rate/connection limit rejections. HTTP 429: Application rate-limit responses (if configured). Status codes alone are telemetry indicators and do NOT prove mitigation.",
+        "mitigation_verified_by_multi_signal": false,
+        "legitimate_probes_available": false
+      },
+      "detection_observations": [
+        {
+          "poll_time": 1792155957.7313955,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.7,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155958.271143,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.7,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155958.8050272,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.7,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155959.3257735,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.7,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155959.8547177,
+          "classification": "NORMAL",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.7,
+          "url_entropy": 0.0,
+          "ip_entropy": 0.0,
+          "top_ip_concentration_pct": 0.0,
+          "verdict_reason": "All metrics within baseline thresholds."
+        },
+        {
+          "poll_time": 1792155960.377601,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.5,
+          "url_entropy": 0.998,
+          "ip_entropy": 2.718,
+          "top_ip_concentration_pct": 20.8,
+          "verdict_reason": "Elevated 5xx error rate: 27.38%."
+        },
+        {
+          "poll_time": 1792155961.8751974,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.5,
+          "url_entropy": 0.998,
+          "ip_entropy": 2.718,
+          "top_ip_concentration_pct": 20.8,
+          "verdict_reason": "Elevated 5xx error rate: 27.38%."
+        },
+        {
+          "poll_time": 1792155962.4000347,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.5,
+          "url_entropy": 0.998,
+          "ip_entropy": 2.718,
+          "top_ip_concentration_pct": 20.8,
+          "verdict_reason": "Elevated 5xx error rate: 27.38%."
+        },
+        {
+          "poll_time": 1792155962.9412827,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.5,
+          "url_entropy": 0.998,
+          "ip_entropy": 2.718,
+          "top_ip_concentration_pct": 20.8,
+          "verdict_reason": "Elevated 5xx error rate: 27.38%."
+        },
+        {
+          "poll_time": 1792155963.4625323,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.5,
+          "url_entropy": 0.998,
+          "ip_entropy": 2.718,
+          "top_ip_concentration_pct": 20.8,
+          "verdict_reason": "Elevated 5xx error rate: 27.38%."
+        },
+        {
+          "poll_time": 1792155963.980927,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.5,
+          "url_entropy": 0.998,
+          "ip_entropy": 2.718,
+          "top_ip_concentration_pct": 20.8,
+          "verdict_reason": "Elevated 5xx error rate: 27.38%."
+        },
+        {
+          "poll_time": 1792155964.5148044,
+          "classification": "SUSPICIOUS",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 0.2,
+          "baseline_rps": 1.5,
+          "url_entropy": 0.998,
+          "ip_entropy": 2.718,
+          "top_ip_concentration_pct": 20.8,
+          "verdict_reason": "Elevated 5xx error rate: 27.38%."
+        },
+        {
+          "poll_time": 1792155965.5703726,
+          "classification": "ATTACK",
+          "mitigation_tier": "TIER_1",
+          "requests_per_sec": 55.0,
+          "baseline_rps": 1.5,
+          "url_entropy": 0.996,
+          "ip_entropy": 2.738,
+          "top_ip_concentration_pct": 17.2,
+          "verdict_reason": "Traffic flood: 55.0 req/s (baseline 1.5 req/s). Low URL entropy (1.00, z=2.49) and high top-IP concentration (17.2%)."
+        }
+      ],
+      "pre_scenario_reset": {
+        "timestamp": "2026-10-16T13:05:57.731395+00:00",
+        "reset_verified": false,
+        "actions": [
+          "Unblocked 203.0.113.199",
+          "Tier reset to NONE confirmed on upstream nodes: ['172.28.0.11:8000', '172.28.0.12:8000']"
+        ],
+        "tier_reset_confirmed_nodes": [
+          "172.28.0.11:8000",
+          "172.28.0.12:8000"
+        ],
+        "backend_verifications": {
+          "172.28.0.12:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "TIER_1",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 1,
+            "is_clean": false
+          },
+          "172.28.0.11:8000": {
+            "classification": "NORMAL",
+            "mitigation_tier": "TIER_1",
+            "requests_per_sec": 0.2,
+            "blocked_ip_count": 0,
+            "is_clean": false
+          }
+        },
+        "baseline_state": "UNVERIFIED"
+      }
+    }
+  ],
+  "summary_metrics": {
+    "binary_evaluation": {
+      "metric_scope": "Scenario-level classification across the 7 benchmark scenarios (NOT request-level packet detection performance)",
+      "definition": "Positive Class = ATTACK scenarios (Concentrated, Distributed, Low-Rate, Honeypot); Negative Class = Non-ATTACK scenarios (Normal, Flash Crowd, Ambiguous)",
+      "true_positives": 3,
+      "false_positives": 2,
+      "true_negatives": 1,
+      "false_negatives": 1,
+      "precision": 0.6,
+      "recall": 0.75,
+      "false_positive_rate": 0.6667,
+      "false_negative_rate": 0.25
+    },
+    "multiclass_evaluation": {
+      "metric_scope": "Scenario-level classification across the 7 benchmark scenarios",
+      "classes": [
+        "NORMAL",
+        "ATTACK",
+        "FLASH_CROWD",
+        "SUSPICIOUS"
+      ],
+      "confusion_matrix": {
+        "NORMAL": {
+          "NORMAL": 0,
+          "ATTACK": 0,
+          "FLASH_CROWD": 0,
+          "SUSPICIOUS": 1
+        },
+        "ATTACK": {
+          "NORMAL": 1,
+          "ATTACK": 3,
+          "FLASH_CROWD": 0,
+          "SUSPICIOUS": 0
+        },
+        "FLASH_CROWD": {
+          "NORMAL": 0,
+          "ATTACK": 1,
+          "FLASH_CROWD": 0,
+          "SUSPICIOUS": 0
+        },
+        "SUSPICIOUS": {
+          "NORMAL": 0,
+          "ATTACK": 1,
+          "FLASH_CROWD": 0,
+          "SUSPICIOUS": 0
+        }
+      },
+      "exact_match_accuracy": 0.4286,
+      "correct_matches": 3,
+      "total_scenarios": 7
+    }
+  },
+  "final_cleanup": {
+    "timestamp": "2026-10-16T13:06:21.065565+00:00",
+    "reset_verified": false,
+    "actions": [
+      "Tier reset to NONE confirmed on upstream nodes: ['172.28.0.11:8000', '172.28.0.12:8000']"
+    ],
+    "tier_reset_confirmed_nodes": [
+      "172.28.0.11:8000",
+      "172.28.0.12:8000"
+    ],
+    "backend_verifications": {
+      "172.28.0.12:8000": {
+        "classification": "NORMAL",
+        "mitigation_tier": "TIER_1",
+        "requests_per_sec": 0.2,
+        "blocked_ip_count": 1,
+        "is_clean": false
+      },
+      "172.28.0.11:8000": {
+        "classification": "NORMAL",
+        "mitigation_tier": "TIER_1",
+        "requests_per_sec": 0.2,
+        "blocked_ip_count": 0,
+        "is_clean": false
+      }
+    },
+    "baseline_state": "UNVERIFIED"
+  }
+}
